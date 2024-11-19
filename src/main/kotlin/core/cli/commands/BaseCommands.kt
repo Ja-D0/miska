@@ -1,7 +1,7 @@
 package com.microtik.core.cli.commands
 
 class BaseCommands(
-    override val path: String = "/"
+    override val path: String = "."
 ): AbstractCommands() {
 
     fun getConfigCommands(): ConfigCommands = ConfigCommands()

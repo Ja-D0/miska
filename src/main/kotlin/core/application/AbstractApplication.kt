@@ -2,7 +2,7 @@ package com.microtik.core.application
 
 import com.microtik.Microtik
 import com.microtik.core.cli.CliManager.CliManager
-import com.microtik.core.config.Config
+import com.microtik.core.config.application.Config
 import com.microtik.core.config.Configurable
 import com.microtik.core.config.configLoader.ConfigLoader
 import java.io.FileNotFoundException

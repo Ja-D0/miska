@@ -28,7 +28,7 @@ class CliManager {
         normalizedCommand.split("/").forEach {
             if (it == "..") {
                 goBack()
-                return null
+                return@forEach
             }
 
             if (it == "exit") {
@@ -53,13 +53,13 @@ class CliManager {
     {
         traceCommands.add(currentCommands)
         currentCommands = newCommand
-        currentPath += newCommand.path
+        currentPath += "/${newCommand.path}"
     }
 
     private fun goBack()
     {
         if (traceCommands.isNotEmpty()) {
-            currentPath = currentPath.dropLast(currentCommands.path.length)
+            currentPath = currentPath.dropLast(currentCommands.path.length + 1)
             currentCommands = traceCommands.last()
             traceCommands.removeLast()
         }
@@ -70,7 +70,7 @@ class CliManager {
     fun cliIn(text: String?): String?
     {
         if (text == null) {
-            print(">>> $currentPath")
+            print(">>> $currentPath$ ")
         } else {
             print(">>> $text: ")
         }
@@ -86,6 +86,6 @@ class CliManager {
              normalizedCommand = command.dropLast(1)
         }
 
-        return normalizedCommand
+        return normalizedCommand.trim()
     }
 }

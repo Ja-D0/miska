@@ -1,10 +1,10 @@
 package com.microtik.core.cli.commands
 
-import com.microtik.core.cli.commands.AbstractCommands
+import com.microtik.Microtik
 
 class ConfigCommands(
-    override val path: String = "config/"
+    override val path: String = "config"
 ): AbstractCommands() {
 
-    fun commandPrint(): String = this::class.simpleName!!
+    fun commandPrint(): String = Microtik.app.getConfig().toString()
 }

@@ -6,4 +6,9 @@ import com.microtik.core.config.AbstractConfig
 data class HttpLogsConfig(
     @SerializedName("path")
     val path: String
-): AbstractConfig()
+): AbstractConfig() {
+
+    override fun toString(): String {
+        return super.toString()
+    }
+}

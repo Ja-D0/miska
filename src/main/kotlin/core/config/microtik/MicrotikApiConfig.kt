@@ -6,4 +6,9 @@ import com.microtik.core.config.AbstractConfig
 data class MicrotikApiConfig(
     @SerializedName("microtik_server")
     val microtikServerConfig: MicrotikServerConfig
-): AbstractConfig()
+): AbstractConfig() {
+
+    override fun toString(): String {
+        return super.toString()
+    }
+}

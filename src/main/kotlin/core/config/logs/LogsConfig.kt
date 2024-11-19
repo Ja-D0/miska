@@ -8,4 +8,9 @@ data class LogsConfig(
     val errorConfig: ErrorLogsConfig,
     @SerializedName("http")
     val httpLogsConfig: HttpLogsConfig
-): AbstractConfig()
+): AbstractConfig() {
+
+    override fun toString(): String {
+        return super.toString()
+    }
+}

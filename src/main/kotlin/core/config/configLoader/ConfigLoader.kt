@@ -1,8 +1,7 @@
 package com.microtik.core.config.configLoader
 
 import com.google.gson.Gson
-import com.microtik.core.config.AbstractConfig
-import com.microtik.core.config.Config
+import com.microtik.core.config.application.Config
 import java.io.File
 import java.io.FileNotFoundException
 
