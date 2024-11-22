@@ -11,7 +11,7 @@ class Application() : AbstractApplication() {
             try {
                 processCommand(cliManager.cliIn(null))
             } catch (exception: Exception) {
-                if (exception.message.toString().isNotEmpty()) {
+                if (exception.message != null) {
                     cliManager.cliOut(exception.message.toString())
                 }
             }

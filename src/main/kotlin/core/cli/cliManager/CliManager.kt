@@ -7,7 +7,6 @@ import org.apache.commons.cli.*
 import kotlin.reflect.KFunction
 
 class CliManager {
-    private var commandLineOptions: Options = Options()
     private var currentCommands: AbstractCommands = BaseCommands()
     private val traceCommands: MutableList<AbstractCommands> = mutableListOf()
     private var currentPath: String
@@ -46,14 +45,17 @@ class CliManager {
             } else {
                 execCommand = currentCommands.findCommandToExecute(it)
                 clParams = parseClParams(command, execCommand!!)
+
                 return@forEach
             }
         }
 
         try {
-            execResult = execCommand!!.call(currentCommands, *clParams.toTypedArray()) as String
+            if (execCommand != null) {
+                execResult = execCommand!!.call(currentCommands, *clParams.toTypedArray()) as String
+            }
         } catch (e: Exception) {
-            printHelp(normalizedCommand.last().toString(), getCommandOptions(execCommand!!))
+            printHelp(normalizedCommand, getCommandOptions(execCommand!!))
             throw Exception()
         }
 
