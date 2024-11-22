@@ -6,5 +6,5 @@ class BaseCommands(
 
     fun getConfigCommands(): ConfigCommands = ConfigCommands()
     fun getAddressCommands(): AddressCommands = AddressCommands()
-    fun commandPrint(): String = this::class.simpleName!!
+    fun commandPrint(address: String): String = address
 }

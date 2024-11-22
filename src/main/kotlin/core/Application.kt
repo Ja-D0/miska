@@ -10,8 +10,10 @@ class Application() : AbstractApplication() {
         while (isRunning) {
             try {
                 processCommand(cliManager.cliIn(null))
-            } catch (exception: RuntimeException) {
-                cliManager.cliOut(exception.message.toString())
+            } catch (exception: Exception) {
+                if (exception.message.toString().isNotEmpty()) {
+                    cliManager.cliOut(exception.message.toString())
+                }
             }
         }
     }

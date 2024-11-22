@@ -1,12 +1,11 @@
 package com.microtik.core.cli.commands
 
 import com.microtik.core.exceptions.NotFoundCommandException
-import kotlin.reflect.KCallable
 import kotlin.reflect.KFunction
 import kotlin.reflect.full.declaredFunctions
 import kotlin.reflect.full.functions
 
-abstract class AbstractCommands: Executable {
+abstract class AbstractCommands {
     abstract val path: String
 
     fun commandHelp(): String
@@ -28,27 +27,31 @@ abstract class AbstractCommands: Executable {
         return result.toString().trim()
     }
 
-    override fun execute(command: String): Any? = defineCommand(command).call(this)
-
-    private fun defineCommand(command: String): KCallable<Any?>
-    {
+    fun findCommands(command: String): AbstractCommands? {
         val convertedCommand: String = command.replaceFirstChar { char -> char.uppercase() }
         val declaredFunctions: Collection<KFunction<*>> = this::class.functions
 
-        val func = try {
+        return try {
+            declaredFunctions.single {
+                it.name == "get" + convertedCommand + "Commands"
+            }.call(this) as AbstractCommands
+        } catch (_: NoSuchElementException) {
+            null
+        }
+    }
+
+    fun findCommandToExecute(command: String): KFunction<*> {
+        val convertedCommand: String = command.replaceFirstChar { char -> char.uppercase() }
+        val declaredFunctions: Collection<KFunction<*>> = this::class.functions
+
+        return try {
             declaredFunctions.single {
                 it.name == "command$convertedCommand"
             }
         } catch (_: NoSuchElementException) {
-            try {
-                declaredFunctions.single {
-                    it.name == "get" + convertedCommand + "Commands"
-                }
-            } catch (_: NoSuchElementException) {
-                throw NotFoundCommandException("Команда не найдена: $command")
-            }
+            throw NotFoundCommandException("Команда не найдена: $command")
         }
-        return func
     }
+
 }
 

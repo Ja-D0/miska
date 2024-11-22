@@ -3,8 +3,11 @@ package com.microtik.core.cli.CliManager
 import com.microtik.Microtik
 import com.microtik.core.cli.commands.AbstractCommands
 import com.microtik.core.cli.commands.BaseCommands
+import org.apache.commons.cli.*
+import kotlin.reflect.KFunction
 
 class CliManager {
+    private var commandLineOptions: Options = Options()
     private var currentCommands: AbstractCommands = BaseCommands()
     private val traceCommands: MutableList<AbstractCommands> = mutableListOf()
     private var currentPath: String
@@ -13,22 +16,22 @@ class CliManager {
         currentPath = currentCommands.path
     }
 
-    fun executeCommand(command: String): String?
-    {
-        val normalizedCommand = prepareCommand(command)
+    fun executeCommand(command: String): String? {
+        var normalizedCommand = prepareCommand(command)
+        val index = normalizedCommand.indexOf(' ')
+        var clParams: List<String> = listOf()
 
-        val mathResult = Regex("""^say -v '(.*)'""").find(normalizedCommand)
-
-        if (mathResult != null && !mathResult.groups[1]?.value.isNullOrBlank()) {
-            return  mathResult.groups[1]?.value.toString()
+        if (index != -1) {
+            normalizedCommand = normalizedCommand.take(index)
         }
 
-        var result: Any? = null
+        var execCommand: KFunction<*>? = null
+        var execResult: String? = null
 
         normalizedCommand.split("/").forEach {
             if (it == "..") {
                 goBack()
-                return@forEach
+                return null
             }
 
             if (it == "exit") {
@@ -36,27 +39,35 @@ class CliManager {
                 return null
             }
 
-            result = currentCommands.execute(it)
+            val commands = currentCommands.findCommands(it)
 
-            if (result is AbstractCommands) {
-                goToCommands(result as AbstractCommands)
-                result = null
+            if (commands != null) {
+                goToCommands(commands)
+            } else {
+                execCommand = currentCommands.findCommandToExecute(it)
+                clParams = parseClParams(command, execCommand!!)
+                return@forEach
             }
         }
 
-        if (result == null) return result
+        try {
+            execResult = execCommand!!.call(currentCommands, *clParams.toTypedArray()) as String
+        } catch (e: Exception) {
+            printHelp(normalizedCommand.last().toString(), getCommandOptions(execCommand!!))
+            throw Exception()
+        }
 
-        return result as String
+        return execResult
     }
 
-    private fun goToCommands(newCommand: AbstractCommands)
+    private fun goToCommands(newCommand: AbstractCommands): Unit
     {
         traceCommands.add(currentCommands)
         currentCommands = newCommand
         currentPath += "/${newCommand.path}"
     }
 
-    private fun goBack()
+    private fun goBack(): Unit
     {
         if (traceCommands.isNotEmpty()) {
             currentPath = currentPath.dropLast(currentCommands.path.length + 1)
@@ -87,5 +98,51 @@ class CliManager {
         }
 
         return normalizedCommand.trim()
+    }
+
+    private fun parseClParams(command: String, function: KFunction<*>): List<String>
+    {
+        val params = function.parameters
+        val options: Options = getCommandOptions(function)
+        val commandName = command.split(" ").first()
+        val commandLineParams = command.split(" ").drop(1).toTypedArray()
+
+        val parser = DefaultParser()
+
+        return try {
+            val cmd: CommandLine = parser.parse(options, commandLineParams)
+
+            if (cmd.hasOption("h")) {
+                printHelp(commandName, options)
+            }
+
+            params.mapNotNull { param ->
+                cmd.getOptionValue(param.name)
+            }
+
+        } catch (e: ParseException) {
+            throw e
+        }
+    }
+
+    private fun printHelp(commandName: String, options: Options): Unit
+    {
+        val formatter = HelpFormatter()
+        formatter.printHelp(commandName, options)
+    }
+
+    private fun getCommandOptions(function: KFunction<*>): Options
+    {
+        val options: Options = Options()
+        val params = function.parameters
+
+        for (param in params) {
+            val name = param.name ?: continue
+            options.addOption(Option(name.first().toString(), name, true, ""))
+        }
+
+        options.addOption("h", "help", false, "Показать справку")
+
+        return options
     }
 }
