@@ -1,6 +1,7 @@
 package com.microtik.core.cli.CliManager
 
 import com.microtik.Microtik
+import com.microtik.core.api.exceptions.FailedRequest
 import com.microtik.core.cli.commands.AbstractCommands
 import com.microtik.core.cli.commands.BaseCommands
 import org.apache.commons.cli.*
@@ -18,7 +19,7 @@ class CliManager {
     fun executeCommand(command: String): String? {
         var normalizedCommand = prepareCommand(command)
         val index = normalizedCommand.indexOf(' ')
-        var clParams: List<String> = listOf()
+        var clParams: List<String>? = listOf()
 
         if (index != -1) {
             normalizedCommand = normalizedCommand.take(index)
@@ -51,12 +52,13 @@ class CliManager {
         }
 
         try {
-            if (execCommand != null) {
-                execResult = execCommand!!.call(currentCommands, *clParams.toTypedArray()) as String
+            if (execCommand != null && clParams != null) {
+                execResult = execCommand!!.call(currentCommands, *clParams!!.toTypedArray()) as String
             }
-        } catch (e: Exception) {
+        } catch (requestException: FailedRequest) {
+            throw requestException
+        } catch (e: IllegalArgumentException) {
             printHelp(normalizedCommand, getCommandOptions(execCommand!!))
-            throw Exception()
         }
 
         return execResult
@@ -78,7 +80,7 @@ class CliManager {
         }
     }
 
-    fun cliOut(text: String): Unit = println(">>> $text")
+    fun cliOut(text: String): Unit = println(text)
 
     fun cliIn(text: String?): String?
     {
@@ -102,7 +104,7 @@ class CliManager {
         return normalizedCommand.trim()
     }
 
-    private fun parseClParams(command: String, function: KFunction<*>): List<String>
+    private fun parseClParams(command: String, function: KFunction<*>): List<String>?
     {
         val params = function.parameters
         val options: Options = getCommandOptions(function)
@@ -116,6 +118,7 @@ class CliManager {
 
             if (cmd.hasOption("h")) {
                 printHelp(commandName, options)
+                return null
             }
 
             params.mapNotNull { param ->

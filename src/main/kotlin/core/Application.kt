@@ -1,6 +1,7 @@
 package com.microtik.core
 
 import com.microtik.core.application.AbstractApplication
+import java.lang.Exception
 
 class Application() : AbstractApplication() {
     override fun run(): Unit

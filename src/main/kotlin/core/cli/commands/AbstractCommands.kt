@@ -1,5 +1,6 @@
 package com.microtik.core.cli.commands
 
+import com.microtik.core.api.endpoints.Api
 import com.microtik.core.exceptions.NotFoundCommandException
 import kotlin.reflect.KFunction
 import kotlin.reflect.full.declaredFunctions
@@ -7,6 +8,7 @@ import kotlin.reflect.full.functions
 
 abstract class AbstractCommands {
     abstract val path: String
+    abstract val apiService: Api?
 
     fun commandHelp(): String
     {
