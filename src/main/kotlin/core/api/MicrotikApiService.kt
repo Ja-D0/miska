@@ -2,6 +2,7 @@ package com.microtik.core.api
 
 import com.microtik.Microtik
 import com.microtik.core.api.endpoints.AddressApi
+import com.microtik.core.api.endpoints.AddressListsApi
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -33,7 +34,7 @@ class MicrotikApiService private constructor() {
             .addInterceptor { chain ->
                 chain.proceed(chain.request().newBuilder().header("Authorization", getBasicCredentials()).build())
             }
-//            .addInterceptor(HttpLoggingInterceptor { message -> println(message)}.apply { level = HttpLoggingInterceptor.Level.BODY })
+            .addInterceptor(HttpLoggingInterceptor { message -> println(message)}.apply { level = HttpLoggingInterceptor.Level.BODY })
             .build()
 
         retrofit = Retrofit.Builder()
@@ -52,4 +53,5 @@ class MicrotikApiService private constructor() {
     }
 
     fun getAddressApi(): AddressApi = retrofit.create(AddressApi::class.java)
+    fun getAddressListsApi(): AddressListsApi = retrofit.create(AddressListsApi::class.java)
 }

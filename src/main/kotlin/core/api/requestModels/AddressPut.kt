@@ -1,8 +1,8 @@
-package com.microtik.core.api.responseModels
+package com.microtik.core.api.requestModels
 
 import com.google.gson.annotations.SerializedName
 
-class AddressPut(
+data class AddressPut(
     @SerializedName("address")
     val address: String,
     @SerializedName("interface")

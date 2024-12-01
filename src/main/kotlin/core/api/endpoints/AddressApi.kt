@@ -1,7 +1,7 @@
 package com.microtik.core.api.endpoints
 
 import com.microtik.core.api.responseModels.AddressPrint
-import com.microtik.core.api.responseModels.AddressPut
+import com.microtik.core.api.requestModels.AddressPut
 import retrofit2.Call
 import retrofit2.http.Body
 import retrofit2.http.DELETE

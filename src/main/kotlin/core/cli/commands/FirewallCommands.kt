@@ -8,4 +8,5 @@ class FirewallCommands(
 ): AbstractCommands() {
 
     fun getFilterCommands(): FilterCommands = FilterCommands()
+    fun getAddressListsCommands(): AddressListsCommands = AddressListsCommands()
 }

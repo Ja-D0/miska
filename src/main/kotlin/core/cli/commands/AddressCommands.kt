@@ -3,7 +3,7 @@ package com.microtik.core.cli.commands
 import com.microtik.core.api.MicrotikApiService
 import com.microtik.core.api.endpoints.AddressApi
 import com.microtik.core.api.exceptions.FailedRequest
-import com.microtik.core.api.responseModels.AddressPut
+import com.microtik.core.api.requestModels.AddressPut
 
 
 class AddressCommands(
