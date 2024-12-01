@@ -6,10 +6,9 @@ import com.microtik.core.api.exceptions.FailedRequest
 import com.microtik.core.api.requestModels.AddressListPut
 
 
-class AddressListsCommands(
-    override val path: String = "address-list",
+class AddressListsCommands: AbstractCommands() {
+    override val path: String = "address-list"
     override val apiService: AddressListsApi =  MicrotikApiService.getInstance().getAddressListsApi()
-): AbstractCommands() {
 
     fun commandPrint(): String
     {

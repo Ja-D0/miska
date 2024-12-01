@@ -9,7 +9,6 @@ import java.io.FileNotFoundException
 import kotlin.system.exitProcess
 
 abstract class AbstractApplication: Application, Configurable {
-
     protected var isRunning: Boolean = false
     private lateinit var config: Config
     protected val cliManager: CliManager = CliManager()
