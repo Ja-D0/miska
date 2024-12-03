@@ -1,82 +1,107 @@
 package com.microtik.core.cli.CliManager
 
 import com.microtik.Microtik
-import com.microtik.core.api.exceptions.FailedRequest
+import com.microtik.core.cli.annotations.Command
+import com.microtik.core.cli.annotations.CommandType
+import com.microtik.core.cli.commandExecutor.CommandExecutor
 import com.microtik.core.cli.commands.AbstractCommands
 import com.microtik.core.cli.commands.BaseCommands
+import com.microtik.core.cli.exceptions.PathConflictException
 import org.apache.commons.cli.*
-import kotlin.reflect.KFunction
+import kotlin.reflect.full.findAnnotation
+import kotlin.reflect.full.memberFunctions
 
 class CliManager {
     private var currentCommands: AbstractCommands = BaseCommands()
+//    private val baseCliCommands: AbstractCommands = BaseCliCommands()
     private val traceCommands: MutableList<AbstractCommands> = mutableListOf()
     private var currentPath: String
+    private lateinit var commands: List<String>
+    private lateinit var options: List<String>
 
     init {
         currentPath = currentCommands.path
     }
 
-    fun executeCommand(command: String): String? {
-        var normalizedCommand = prepareCommand(command)
-        val index = normalizedCommand.indexOf(' ')
-        var clParams: List<String>? = listOf()
+    fun parseCommandLine(commandLine: String): String
+    {
+        val preparedCommandLine = prepareCommand(commandLine)
+        val parts = preparedCommandLine.split(" ")
+        commands = parts.first().split("/")
+        options = parts.drop(1)
 
-        if (index != -1) {
-            normalizedCommand = normalizedCommand.take(index)
-        }
-
-        var execCommand: KFunction<*>? = null
-        var execResult: String? = null
-
-        normalizedCommand.split("/").forEach {
-            if (it == "..") {
-                goBack()
-                return null
-            }
-
-            if (it == "exit") {
-                Microtik.app.stop()
-                return null
-            }
-
-            val commands = currentCommands.findCommands(it)
-
-            if (commands != null) {
-                goToCommands(commands)
-            } else {
-                execCommand = currentCommands.findCommandToExecute(it)
-                clParams = parseClParams(command, execCommand!!)
-
-                return@forEach
-            }
-        }
-
-        try {
-            if (execCommand != null && clParams != null) {
-                execResult = execCommand!!.call(currentCommands, *clParams!!.toTypedArray()) as String
-            }
-        } catch (requestException: FailedRequest) {
-            throw requestException
-        } catch (e: IllegalArgumentException) {
-            printHelp(normalizedCommand, getCommandOptions(execCommand!!))
-        }
-
-        return execResult
+        return execute()
     }
 
-    private fun goToCommands(newCommand: AbstractCommands): Unit
+    private fun execute(): String
+    {
+        var result: String = ""
+
+        for (command in commands) {
+            if (checkAndRunBasicCommands(command, options)) {
+                continue
+            }
+
+            if (isPath(command)) {
+                goToCommands(CommandExecutor<AbstractCommands>(CommandType.PATH) { commandName, error, options ->
+                    printHelp(commandName, error, options)
+                }.execute(command, arrayListOf(), currentCommands))
+                continue
+            }
+
+            result = CommandExecutor<String>(CommandType.COMMAND) { commandName, error, options ->
+                printHelp(commandName, error, options)
+            }.execute(command, options, currentCommands)
+        }
+
+        return result
+    }
+
+    private fun checkAndRunBasicCommands(command: String, options: List<String>): Boolean
+    {
+        return when (command) {
+            ".." -> {
+                goBack()
+                true
+            }
+            "exit" -> {
+                Microtik.app.stop()
+                throw Exception("Приложение остановлено")
+            }
+            else -> false
+        }
+    }
+
+    fun goToCommands(newCommand: AbstractCommands): Unit
     {
         traceCommands.add(currentCommands)
         currentCommands = newCommand
         currentPath += "/${newCommand.path}"
     }
 
-    private fun goBack(): Unit
+    fun goBack(): Unit
     {
         if (traceCommands.isNotEmpty()) {
             currentPath = currentPath.dropLast(currentCommands.path.length + 1)
             currentCommands = traceCommands.last()
             traceCommands.removeLast()
+        }
+    }
+
+    private fun isPath(command: String): Boolean
+    {
+        return try {
+            currentCommands::class.memberFunctions.single {function ->
+                val commandAnnotation = function.findAnnotation<Command>()
+                commandAnnotation != null
+                        && commandAnnotation.commandType == CommandType.PATH
+                        && commandAnnotation.name == command
+            }
+            true
+        } catch (illegalArgumentException: IllegalArgumentException) {
+            throw PathConflictException("Невозможно определить правильный путь: $command")
+        } catch (notFoundException: NoSuchElementException) {
+            false
         }
     }
 
@@ -104,50 +129,13 @@ class CliManager {
         return normalizedCommand.trim()
     }
 
-    private fun parseClParams(command: String, function: KFunction<*>): List<String>?
+    private fun printHelp(commandName: String, errorMessage: String? = null, options: Options): Unit
     {
-        val params = function.parameters
-        val options: Options = getCommandOptions(function)
-        val commandName = command.split(" ").first()
-        val commandLineParams = command.split(" ").drop(1).toTypedArray()
-
-        val parser = DefaultParser()
-
-        return try {
-            val cmd: CommandLine = parser.parse(options, commandLineParams)
-
-            if (cmd.hasOption("h")) {
-                printHelp(commandName, options)
-                return null
-            }
-
-            params.mapNotNull { param ->
-                cmd.getOptionValue(param.name)
-            }
-
-        } catch (e: ParseException) {
-            throw e
+        if (errorMessage != null) {
+            println(errorMessage)
         }
-    }
 
-    private fun printHelp(commandName: String, options: Options): Unit
-    {
         val formatter = HelpFormatter()
         formatter.printHelp(commandName, options)
-    }
-
-    private fun getCommandOptions(function: KFunction<*>): Options
-    {
-        val options: Options = Options()
-        val params = function.parameters
-
-        for (param in params) {
-            val name = param.name ?: continue
-            options.addOption(Option(name.first().toString(), name, true, ""))
-        }
-
-        options.addOption("h", "help", false, "Показать справку")
-
-        return options
     }
 }

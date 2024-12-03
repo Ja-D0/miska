@@ -1,59 +1,29 @@
 package com.microtik.core.cli.commands
 
 import com.microtik.core.api.endpoints.Api
-import com.microtik.core.exceptions.NotFoundCommandException
-import kotlin.reflect.KFunction
+import com.microtik.core.cli.annotations.Command
+import com.microtik.core.cli.annotations.CommandType
 import kotlin.reflect.full.declaredFunctions
-import kotlin.reflect.full.functions
+import kotlin.reflect.full.findAnnotation
 
 abstract class AbstractCommands {
     abstract val path: String
     abstract val apiService: Api?
 
+    @Command("help", CommandType.COMMAND, "Выводит команды текущего каталога")
     fun commandHelp(): String
     {
         val result: StringBuilder = StringBuilder()
 
         this::class.declaredFunctions
             .sortedWith(compareBy(
-                { !it.name.startsWith("get") },
+                { it.findAnnotation<Command>()?.commandType != CommandType.PATH },
                 { it.name }
             )).forEach { member ->
-            result.append(member.name
-                .replace("command", "")
-                .replace("Commands", "")
-                .replace("get", "")
-                .replaceFirstChar { it.lowercase() } + "   ")
+            result.append(member.findAnnotation<Command>()?.name  + "   ")
         }
 
         return result.toString().trim()
     }
-
-    fun findCommands(command: String): AbstractCommands? {
-        val convertedCommand: String = command.replaceFirstChar { char -> char.uppercase() }
-        val declaredFunctions: Collection<KFunction<*>> = this::class.functions
-
-        return try {
-            declaredFunctions.single {
-                it.name == "get" + convertedCommand + "Commands"
-            }.call(this) as AbstractCommands
-        } catch (_: NoSuchElementException) {
-            null
-        }
-    }
-
-    fun findCommandToExecute(command: String): KFunction<*> {
-        val convertedCommand: String = command.replaceFirstChar { char -> char.uppercase() }
-        val declaredFunctions: Collection<KFunction<*>> = this::class.functions
-
-        return try {
-            declaredFunctions.single {
-                it.name == "command$convertedCommand"
-            }
-        } catch (_: NoSuchElementException) {
-            throw NotFoundCommandException("Команда не найдена: $command")
-        }
-    }
-
 }
 

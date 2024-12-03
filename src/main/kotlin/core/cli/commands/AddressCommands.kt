@@ -4,12 +4,15 @@ import com.microtik.core.api.MicrotikApiService
 import com.microtik.core.api.endpoints.AddressApi
 import com.microtik.core.api.exceptions.FailedRequest
 import com.microtik.core.api.requestModels.AddressPut
-
+import com.microtik.core.cli.annotations.Command
+import com.microtik.core.cli.annotations.CommandType
+import com.microtik.core.cli.annotations.Option
 
 class AddressCommands : AbstractCommands() {
     override val path: String = "address"
     override val apiService: AddressApi = MicrotikApiService.getInstance().getAddressApi()
 
+    @Command("print", CommandType.COMMAND, "Возвращает список адресов")
     fun commandPrint(): String
     {
         var result: String = ""
@@ -25,7 +28,13 @@ class AddressCommands : AbstractCommands() {
         return result
     }
 
-    fun commandAdd(address: String, interfaces: String): String
+    @Command("add", CommandType.COMMAND, "Добавляет адрес")
+    fun commandAdd(
+        @Option("a", "address", true, "IP адрес")
+        address: String,
+        @Option("i", "interface", true, "Интерфейс")
+        interfaces: String
+    ): String
     {
         var result: String = ""
 
@@ -40,7 +49,11 @@ class AddressCommands : AbstractCommands() {
         return result
     }
 
-    fun commandRemove(id: String): String
+    @Command("remove", CommandType.COMMAND, "Удалить адрес")
+    fun commandRemove(
+        @Option("i", "id", true, "Номер записи")
+        id: String
+    ): String
     {
         val response = apiService.remove(id).execute()
 

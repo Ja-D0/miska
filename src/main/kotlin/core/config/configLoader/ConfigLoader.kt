@@ -3,9 +3,9 @@ package com.microtik.core.config.configLoader
 import com.google.gson.Gson
 import com.google.gson.JsonSyntaxException
 import com.microtik.core.config.application.Config
-import com.microtik.core.exceptions.ConfigFileNotFoundException
-import com.microtik.core.exceptions.ConfigSyntaxException
-import com.microtik.core.exceptions.LoadConfigException
+import com.microtik.core.config.exceptions.ConfigFileNotFoundException
+import com.microtik.core.config.exceptions.ConfigSyntaxException
+import com.microtik.core.config.exceptions.LoadConfigException
 import java.io.File
 
 class ConfigLoader: AbstractConfigLoader()

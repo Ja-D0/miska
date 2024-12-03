@@ -1,3 +1,3 @@
-package com.microtik.core.exceptions
+package com.microtik.core.config.exceptions
 
 class ConfigSyntaxException(override val message: String?): RuntimeException(message)

@@ -23,9 +23,9 @@ class Application() : AbstractApplication() {
     {
         if (command.isNullOrBlank()) return
 
-        val result = cliManager.executeCommand(command)
+        val result = cliManager.parseCommandLine(command)
 
-        if (result is String) {
+        if (result.isNotEmpty()) {
             return cliManager.cliOut(result)
         }
     }
