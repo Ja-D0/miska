@@ -5,6 +5,7 @@ import com.microtik.core.cli.CliManager.CliManager
 import com.microtik.core.config.application.Config
 import com.microtik.core.config.Configurable
 import com.microtik.core.config.configLoader.ConfigLoader
+import java.io.File
 import java.io.FileNotFoundException
 import kotlin.system.exitProcess
 

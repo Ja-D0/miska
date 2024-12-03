@@ -2,6 +2,7 @@ package com.microtik.core.config.configLoader
 
 import com.google.gson.Gson
 import com.google.gson.JsonSyntaxException
+import com.microtik.Microtik
 import com.microtik.core.config.application.Config
 import com.microtik.core.config.exceptions.ConfigFileNotFoundException
 import com.microtik.core.config.exceptions.ConfigSyntaxException
@@ -16,7 +17,8 @@ class ConfigLoader: AbstractConfigLoader()
 
     override fun load(configFilePath: String?): Config
     {
-        val filePath = (configFilePath ?: DEFAULT_CONFIGS_PATH) + "config.json"
+        val dir = Microtik.getBaseJarDir()
+        val filePath = (configFilePath ?: ("$dir\\" + DEFAULT_CONFIGS_PATH)) + "config.json"
 
         val configFile: File = File(filePath)
 
