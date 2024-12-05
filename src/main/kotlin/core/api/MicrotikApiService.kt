@@ -3,6 +3,7 @@ package com.microtik.core.api
 import com.microtik.Microtik
 import com.microtik.core.api.endpoints.AddressApi
 import com.microtik.core.api.endpoints.AddressListsApi
+import com.microtik.core.api.endpoints.FirewallFilterApi
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -53,5 +54,8 @@ class MicrotikApiService private constructor() {
     }
 
     fun getAddressApi(): AddressApi = retrofit.create(AddressApi::class.java)
+
     fun getAddressListsApi(): AddressListsApi = retrofit.create(AddressListsApi::class.java)
+
+    fun getFirewallFilterApi(): FirewallFilterApi = retrofit.create(FirewallFilterApi::class.java)
 }
