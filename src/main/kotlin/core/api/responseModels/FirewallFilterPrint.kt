@@ -20,33 +20,33 @@ data class FirewallFilterPrint(
     @SerializedName("log")
     val log: Boolean,
     @SerializedName("log-prefix")
-    val logPrefix: String,
+    val logPrefix: String? = null,
     @SerializedName("packets")
-    val packets: String,
+    val packets: String? = null,
     @SerializedName("dst-address")
-    val dstAddress: String,
+    val dstAddress: String? = null,
     @SerializedName("dst-address-list")
-    val dstAddressList: String,
+    val dstAddressList: String? = null,
     @SerializedName("dst-port")
-    val dstPort: String,
+    val dstPort: String? = null,
     @SerializedName("in-interface")
-    val inInterface: String,
+    val inInterface: String? = null,
     @SerializedName("in-interface-list")
-    val inInterfaceList: String,
+    val inInterfaceList: String? = null,
     @SerializedName("out-interface")
-    val outInterface: String,
+    val outInterface: String? = null,
     @SerializedName("out-interface-list")
-    val outInterfaceList: String,
+    val outInterfaceList: String? = null,
     @SerializedName("port")
-    val port: String,
+    val port: String? = null,
     @SerializedName("protocol")
-    val protocol: String,
+    val protocol: String? = null,
     @SerializedName("src-address")
-    val srcAddress: String,
+    val srcAddress: String? = null,
     @SerializedName("src-address-list")
-    val srcAddressList: String,
+    val srcAddressList: String? = null,
     @SerializedName("src-port")
-    val srcPort: String
+    val srcPort: String? = null,
 ) {
     override fun toString(): String {
         return "ID: $id, Action: $action, Bytes: $bytes, Chain: $chain, Disabled: $disabled, Dynamic: $dynamic, " +

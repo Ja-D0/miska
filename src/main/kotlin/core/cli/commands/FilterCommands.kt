@@ -33,12 +33,44 @@ class FilterCommands: AbstractCommands() {
         @Option("c", "chain", false, "Цепь")
         chain: String = "forward",
         @Option("a", "accept", false, "Действие")
-        action: String = "accept"
+        action: String = "accept",
+        @Option("sa", "src-address", false, "Адрес источника")
+        srcAddress: String? = null,
+        @Option("da", "dst-address", false, "Адрес назначения")
+        dstAddress: String? = null,
+        @Option("sal", "src-address-List", false, "Список адресов источника")
+        srcAddressList: String? = null,
+        @Option("dal", "dst-address-list", false, "Список адресов назначения")
+        dstAddressList: String? = null,
+        @Option("p", "protocol", false, "Протокол")
+        protocol: String? = null,
+        @Option("sp", "src-port", false, "Порт источника")
+        srcPort: String? = null,
+        @Option("dp", "dst-port", false, "Порт назначения")
+        dstPort: String? = null,
+        @Option("port", "port", false, "Любой порт")
+        port: String? = null,
+        @Option("inI", "in-interface", false, "Входной интерфейс")
+        inInterface: String? = null,
+        @Option("outI", "out-interface", false, "Выходной интерфейс")
+        outInterface: String? = null,
+        @Option("inIL", "in-interface-list", false, "Список входных интерфейсов")
+        inInterfaceList: String? = null,
+        @Option("outIL", "out-interface-list", false, "Список выходных интерфейсов")
+        outInterfaceList: String? = null,
+        @Option("l", "log", false, "Логирование")
+        log: Boolean? = null,
+        @Option("lp", "log-prefix", false, "Префикс лога")
+        logPrefix: String? = null,
     ): String
     {
         var result: String = ""
 
-        val response = apiService.add(FirewallFilterPut(chain, action)).execute()
+        val response = apiService.add(
+            FirewallFilterPut(action, chain,  srcAddress, dstAddress, srcAddressList, dstAddressList, protocol, srcPort,
+                dstPort, port, inInterface, outInterface, inInterfaceList, outInterfaceList, log, logPrefix
+            )
+        ).execute()
 
         if (response.isSuccessful && response.body() != null) {
             result = response.body()!!.toString()
@@ -47,5 +79,21 @@ class FilterCommands: AbstractCommands() {
         }
 
         return result
+    }
+
+    @Command("remove", CommandType.COMMAND, "Удалить адрес")
+    fun commandRemove(
+        @Option("i", "id", true, "Номер записи")
+        id: String
+    ): String
+    {
+        val response = apiService.remove(id).execute()
+
+        if (!response.isSuccessful) {
+            println(response.message())
+            throw FailedRequest(response.code(), response.body().toString(), response.message())
+        }
+
+        return ""
     }
 }

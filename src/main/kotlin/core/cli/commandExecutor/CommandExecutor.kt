@@ -103,27 +103,27 @@ open class CommandExecutor<T>(private val commandType: CommandType, private val 
             var needType: String = "String"
 
             val result = when {
-                type.isSubtypeOf(Boolean::class.createType()) -> {
+                type.isSubtypeOf(Boolean::class.createType(nullable = true)) -> {
                     needType = "Boolean"
                     value.toBoolean()
                 }
-                type.isSubtypeOf(Int::class.createType()) -> {
+                type.isSubtypeOf(Int::class.createType(nullable = true)) -> {
                     needType = "Integer"
                     value.toIntOrNull()
                 }
-                type.isSubtypeOf(Double::class.createType()) -> {
+                type.isSubtypeOf(Double::class.createType(nullable = true)) -> {
                     needType = "Double"
                     value.toDoubleOrNull()
                 }
-                type.isSubtypeOf(Long::class.createType()) -> {
+                type.isSubtypeOf(Long::class.createType(nullable = true)) -> {
                     needType = "Long"
                     value.toLongOrNull()
                 }
-                type.isSubtypeOf(Float::class.createType()) -> {
+                type.isSubtypeOf(Float::class.createType(nullable = true)) -> {
                     needType = "Float"
                     value.toFloatOrNull()
                 }
-                type.isSubtypeOf(String::class.createType()) -> {
+                type.isSubtypeOf(String::class.createType(nullable = true)) -> {
                     needType = "String"
                     value
                 }
