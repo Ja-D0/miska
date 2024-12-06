@@ -21,6 +21,7 @@ data class AddressResponse(
     val network: String,
 ) : Response {
     override fun toString(): String {
-        return "ID: $id, Actual Interface: $actualInterface, Address: $address, Disabled: $disabled, Dynamic: $dynamic, Interface: $_interface, Invalid: $invalid, Network: $network"
+        return "ID: $id, Actual Interface: $actualInterface, Address: $address, Disabled: $disabled, Dynamic: $dynamic," +
+                " Interface: $_interface, Invalid: $invalid, Network: $network"
     }
 }

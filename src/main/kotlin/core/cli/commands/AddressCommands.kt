@@ -19,9 +19,11 @@ class AddressCommands : AbstractCommands() {
     fun commandAdd(
         @Option("a", "address", true, "IP адрес")
         address: String,
+        @Option("n", "network", false, "Сеть")
+        network: String? = null,
         @Option("i", "interface", true, "Интерфейс")
         interfaces: String
-    ): String = runRequest { apiService.add(AddressPayload(address, interfaces)).execute() }
+    ): String = runRequest { apiService.add(AddressPayload(address, interfaces, network)).execute() }
 
     @Command("edit", CommandType.COMMAND, "Редактирует адрес")
     fun commandEdit(
@@ -29,9 +31,11 @@ class AddressCommands : AbstractCommands() {
         id: String,
         @Option("a", "address", false, "IP адрес")
         address: String? = null,
+        @Option("n", "network", false, "Сеть")
+        network: String? = null,
         @Option("i", "interface", false, "Интерфейс")
         interfaces: String? = null
-    ): String = runRequest<AddressResponse> { apiService.edit(id, AddressPayload(address, interfaces)).execute() }
+    ): String = runRequest<AddressResponse> { apiService.edit(id, AddressPayload(address, interfaces, network)).execute() }
 
     @Command("disable", CommandType.COMMAND, "Отключить правило")
     fun commandDisable(

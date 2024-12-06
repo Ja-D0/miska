@@ -15,8 +15,11 @@ data class AddressListsResponse(
     val dynamic: Boolean,
     @SerializedName("list")
     val list: String,
+    @SerializedName("timeout")
+    val timeout: String? = null,
 ) : Response {
     override fun toString(): String {
-        return "ID: $id, Address: $address, Creation-time: $creationTime, Disabled: $disabled, Dynamic: $dynamic, List: $list"
+        return "ID: $id, Address: $address, Creation-time: $creationTime, Disabled: $disabled, Dynamic: $dynamic, " +
+                "List: $list, Timeout: $timeout"
     }
 }
