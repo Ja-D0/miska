@@ -17,7 +17,10 @@ import kotlin.reflect.full.functions
 import kotlin.reflect.full.isSubtypeOf
 
 //TODO: Переписать и сделать слушатель на -h
-open class CommandExecutor<T>(private val commandType: CommandType, private val helpCallback: (String, String, Options) -> Unit) {
+open class CommandExecutor<T>(
+    private val commandType: CommandType,
+    private val helpCallback: (String, String, Options) -> Unit
+) {
     fun execute(command: String, cliOptions: List<String>, commands: AbstractCommands): T {
         val func: KFunction<T>
 
@@ -49,8 +52,7 @@ open class CommandExecutor<T>(private val commandType: CommandType, private val 
         private lateinit var commandLine: CommandLine
         private val options: Options = Options()
 
-        fun resolve(commands: AbstractCommands): HashMap<KParameter, Any>
-        {
+        fun resolve(commands: AbstractCommands): HashMap<KParameter, Any> {
             val linkedParams: HashMap<KParameter, Any> = hashMapOf<KParameter, Any>()
 
             if (validate()) {
@@ -73,33 +75,32 @@ open class CommandExecutor<T>(private val commandType: CommandType, private val 
         }
 
         private fun validate(): Boolean = try {
-                commandLine = DefaultParser().parse(options, cliOptions.toTypedArray())
-                true
-            } catch (missingOptionException: MissingOptionException) {
-                helpCallback(
-                    command,
-                    "Отсутствуют обязательные параметры: ${missingOptionException.missingOptions}",
-                    options
-                )
-                false
-            } catch (missingArgumentException: MissingArgumentException) {
-                helpCallback(
-                    command,
-                    "Не указано обязательное значение у параметра: -${missingArgumentException.option.key}",
-                    options
-                )
-                false
-            } catch (unrecognizedOptionException: UnrecognizedOptionException) {
-                helpCallback(
-                    command,
-                    "Указан неизвестный параметр: ${unrecognizedOptionException.option}",
-                    options
-                )
-                false
-            }
+            commandLine = DefaultParser().parse(options, cliOptions.toTypedArray())
+            true
+        } catch (missingOptionException: MissingOptionException) {
+            helpCallback(
+                command,
+                "Отсутствуют обязательные параметры: ${missingOptionException.missingOptions}",
+                options
+            )
+            false
+        } catch (missingArgumentException: MissingArgumentException) {
+            helpCallback(
+                command,
+                "Не указано обязательное значение у параметра: -${missingArgumentException.option.key}",
+                options
+            )
+            false
+        } catch (unrecognizedOptionException: UnrecognizedOptionException) {
+            helpCallback(
+                command,
+                "Указан неизвестный параметр: ${unrecognizedOptionException.option}",
+                options
+            )
+            false
+        }
 
-        private fun resolveParameterType(value: String, type: KType): Any
-        {
+        private fun resolveParameterType(value: String, type: KType): Any {
             var needType: String = "String"
 
             val result = when {
@@ -107,26 +108,32 @@ open class CommandExecutor<T>(private val commandType: CommandType, private val 
                     needType = "Boolean"
                     value.toBoolean()
                 }
+
                 type.isSubtypeOf(Int::class.createType(nullable = true)) -> {
                     needType = "Integer"
                     value.toIntOrNull()
                 }
+
                 type.isSubtypeOf(Double::class.createType(nullable = true)) -> {
                     needType = "Double"
                     value.toDoubleOrNull()
                 }
+
                 type.isSubtypeOf(Long::class.createType(nullable = true)) -> {
                     needType = "Long"
                     value.toLongOrNull()
                 }
+
                 type.isSubtypeOf(Float::class.createType(nullable = true)) -> {
                     needType = "Float"
                     value.toFloatOrNull()
                 }
+
                 type.isSubtypeOf(String::class.createType(nullable = true)) -> {
                     needType = "String"
                     value
                 }
+
                 else -> null
             }
 
@@ -137,8 +144,7 @@ open class CommandExecutor<T>(private val commandType: CommandType, private val 
             throw ConvertParameterException("Не удалось преобразовать $value к нужному типу: $needType")
         }
 
-        fun extractFunctionOptions(): Unit
-        {
+        fun extractFunctionOptions(): Unit {
             val funcParams = function.parameters.drop(1).filter { kParameter ->
                 val optionAnnotation = kParameter.findAnnotation<Option>()
 

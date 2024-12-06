@@ -2,11 +2,11 @@ package com.microtik.core.api.requestModels
 
 import com.google.gson.annotations.SerializedName
 
-data class FirewallFilterPut(
+data class FirewallFilterPayload(
     @SerializedName("action")
-    val action: String,
+    val action: String? = null,
     @SerializedName("chain")
-    val chain: String,
+    val chain: String? = null,
     @SerializedName("src-address")
     val srcAddress: String? = null,
     @SerializedName("dst-address")
@@ -35,4 +35,6 @@ data class FirewallFilterPut(
     val log: Boolean? = null,
     @SerializedName("log-prefix")
     val logPrefix: String? = null,
-)
+    @SerializedName("disabled")
+    val disabled: Boolean? = null,
+) : Payload

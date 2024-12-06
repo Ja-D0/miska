@@ -5,11 +5,10 @@ import com.microtik.core.cli.CliManager.CliManager
 import com.microtik.core.config.application.Config
 import com.microtik.core.config.Configurable
 import com.microtik.core.config.configLoader.ConfigLoader
-import java.io.File
 import java.io.FileNotFoundException
 import kotlin.system.exitProcess
 
-abstract class AbstractApplication: Application, Configurable {
+abstract class AbstractApplication : Application, Configurable {
     protected var isRunning: Boolean = false
     private lateinit var config: Config
     protected val cliManager: CliManager = CliManager()
@@ -20,8 +19,7 @@ abstract class AbstractApplication: Application, Configurable {
 
     fun getConfig(): Config = config
 
-    override fun loadConfig(configFilePath: String?): AbstractApplication
-    {
+    override fun loadConfig(configFilePath: String?): AbstractApplication {
         try {
             config = ConfigLoader().load(configFilePath)
         } catch (exception: FileNotFoundException) {
@@ -32,20 +30,17 @@ abstract class AbstractApplication: Application, Configurable {
         return this
     }
 
-    override fun start(): Unit
-    {
+    override fun start(): Unit {
         isRunning = true
         Microtik.app = this
     }
 
-    override fun stop(): Unit
-    {
+    override fun stop(): Unit {
         isRunning = false
         cliManager.cliOut("Пока!")
     }
 
-    protected fun authorization(): Unit
-    {
+    protected fun authorization(): Unit {
         var attempts = 3;
 
         while (attempts != 0) {

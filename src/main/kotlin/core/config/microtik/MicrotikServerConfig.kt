@@ -7,7 +7,7 @@ data class MicrotikServerConfig(
     val port: Int,
     val login: String,
     val password: String
-): AbstractConfig() {
+) : AbstractConfig() {
 
     override fun toString(): String {
         return super.toString()

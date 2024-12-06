@@ -5,7 +5,7 @@ import com.microtik.core.cli.annotations.Command
 import com.microtik.core.cli.annotations.CommandType
 import com.microtik.core.cli.annotations.Option
 
-class BaseCommands: AbstractCommands() {
+class BaseCommands : AbstractCommands() {
     override val path: String = "."
     override val apiService: Api? = null
 

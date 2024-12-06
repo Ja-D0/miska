@@ -10,7 +10,7 @@ data class Config(
     val microtikApiConfig: MicrotikApiConfig,
     @SerializedName("logs")
     val logsConfig: LogsConfig,
-): AbstractConfig() {
+) : AbstractConfig() {
 
     override fun toString(): String {
         return super.toString()

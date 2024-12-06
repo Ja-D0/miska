@@ -7,7 +7,7 @@ import com.microtik.core.cli.annotations.CommandType
 
 class BaseCliCommands(
     private val cliManager: CliManager,
-): AbstractCommands() {
+) : AbstractCommands() {
     override val path: String = ""
     override val apiService: Api? = null
 //

@@ -6,5 +6,6 @@ import java.io.File
 object Microtik {
     lateinit var app: AbstractApplication
 
-    fun getBaseJarDir(): String = File(this::class.java.protectionDomain.codeSource.location.toURI()).parentFile.toString()
+    fun getBaseJarDir(): String =
+        File(this::class.java.protectionDomain.codeSource.location.toURI()).parentFile.toString()
 }

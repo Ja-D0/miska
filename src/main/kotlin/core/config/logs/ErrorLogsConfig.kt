@@ -6,7 +6,7 @@ import com.microtik.core.config.AbstractConfig
 data class ErrorLogsConfig(
     @SerializedName("path")
     val path: String
-): AbstractConfig() {
+) : AbstractConfig() {
 
     override fun toString(): String {
         return super.toString()
