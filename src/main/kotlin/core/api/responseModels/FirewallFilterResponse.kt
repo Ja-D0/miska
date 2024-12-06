@@ -1,8 +1,8 @@
 package com.microtik.core.api.responseModels
 
 import com.google.gson.annotations.SerializedName
-//TODO: Подумать об объединении моделей print и add
-data class FirewallFilterPrint(
+
+data class FirewallFilterResponse(
     @SerializedName(".id")
     val id: String,
     @SerializedName("action")
@@ -47,7 +47,7 @@ data class FirewallFilterPrint(
     val srcAddressList: String? = null,
     @SerializedName("src-port")
     val srcPort: String? = null,
-) {
+) : Response {
     override fun toString(): String {
         return "ID: $id, Action: $action, Bytes: $bytes, Chain: $chain, Disabled: $disabled, Dynamic: $dynamic, " +
                 "Invalid: $invalid, Log: $log, Log-prefix: $logPrefix, Packets: $packets, Dst Address: $dstAddress, " +

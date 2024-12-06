@@ -4,8 +4,7 @@ import com.microtik.core.application.AbstractApplication
 import java.lang.Exception
 
 class Application() : AbstractApplication() {
-    override fun run(): Unit
-    {
+    override fun run(): Unit {
         start()
 
         while (isRunning) {
@@ -19,8 +18,7 @@ class Application() : AbstractApplication() {
         }
     }
 
-    override fun processCommand(command: String?): Unit
-    {
+    override fun processCommand(command: String?): Unit {
         if (command.isNullOrBlank()) return
 
         val result = cliManager.parseCommandLine(command)

@@ -9,14 +9,12 @@ import com.microtik.core.config.exceptions.ConfigSyntaxException
 import com.microtik.core.config.exceptions.LoadConfigException
 import java.io.File
 
-class ConfigLoader: AbstractConfigLoader()
-{
+class ConfigLoader : AbstractConfigLoader() {
     companion object {
         private const val DEFAULT_CONFIGS_PATH: String = "configs/"
     }
 
-    override fun load(configFilePath: String?): Config
-    {
+    override fun load(configFilePath: String?): Config {
         val dir = Microtik.getBaseJarDir()
         val filePath = (configFilePath ?: ("$dir\\" + DEFAULT_CONFIGS_PATH)) + "config.json"
 

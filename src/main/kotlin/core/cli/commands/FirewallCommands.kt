@@ -4,7 +4,7 @@ import com.microtik.core.api.endpoints.Api
 import com.microtik.core.cli.annotations.Command
 import com.microtik.core.cli.annotations.CommandType
 
-class FirewallCommands: AbstractCommands() {
+class FirewallCommands : AbstractCommands() {
     override val path: String = "firewall"
     override val apiService: Api? = null
 

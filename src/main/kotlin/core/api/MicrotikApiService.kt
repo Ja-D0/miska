@@ -11,14 +11,12 @@ import retrofit2.converter.gson.GsonConverterFactory
 import java.util.*
 import java.util.concurrent.TimeUnit
 
-
 class MicrotikApiService private constructor() {
     companion object {
         private var instance: MicrotikApiService? = null
         private lateinit var retrofit: Retrofit
 
-        fun getInstance(): MicrotikApiService
-        {
+        fun getInstance(): MicrotikApiService {
             if (instance == null) {
                 instance = MicrotikApiService()
             }
@@ -35,7 +33,9 @@ class MicrotikApiService private constructor() {
             .addInterceptor { chain ->
                 chain.proceed(chain.request().newBuilder().header("Authorization", getBasicCredentials()).build())
             }
-            .addInterceptor(HttpLoggingInterceptor { message -> println(message)}.apply { level = HttpLoggingInterceptor.Level.BODY })
+            .addInterceptor(HttpLoggingInterceptor { message -> println(message) }.apply {
+                level = HttpLoggingInterceptor.Level.BODY
+            })
             .build()
 
         retrofit = Retrofit.Builder()
@@ -45,8 +45,7 @@ class MicrotikApiService private constructor() {
             .build()
     }
 
-    private fun getBasicCredentials(): String
-    {
+    private fun getBasicCredentials(): String {
         val login = Microtik.app.getConfig().microtikApiConfig.microtikServerConfig.login
         val password = Microtik.app.getConfig().microtikApiConfig.microtikServerConfig.password
 

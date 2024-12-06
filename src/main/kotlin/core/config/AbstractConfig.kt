@@ -5,8 +5,7 @@ import kotlin.reflect.full.declaredMemberProperties
 import kotlin.reflect.jvm.javaField
 
 abstract class AbstractConfig {
-    override fun toString(): String
-    {
+    override fun toString(): String {
         return "\n" + this::class.simpleName!!.lowercase() + ":\n" + toStringWithIndentation()
     }
 

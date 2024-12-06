@@ -13,7 +13,8 @@ import kotlin.reflect.full.memberFunctions
 
 class CliManager {
     private var currentCommands: AbstractCommands = BaseCommands()
-//    private val baseCliCommands: AbstractCommands = BaseCliCommands()
+
+    //    private val baseCliCommands: AbstractCommands = BaseCliCommands()
     private val traceCommands: MutableList<AbstractCommands> = mutableListOf()
     private var currentPath: String
     private lateinit var commands: List<String>
@@ -23,8 +24,7 @@ class CliManager {
         currentPath = currentCommands.path
     }
 
-    fun parseCommandLine(commandLine: String): String
-    {
+    fun parseCommandLine(commandLine: String): String {
         val preparedCommandLine = prepareCommand(commandLine)
         val parts = preparedCommandLine.split(" ")
         commands = parts.first().split("/")
@@ -33,8 +33,7 @@ class CliManager {
         return execute()
     }
 
-    private fun execute(): String
-    {
+    private fun execute(): String {
         var result: String = ""
 
         for (command in commands) {
@@ -57,30 +56,29 @@ class CliManager {
         return result
     }
 
-    private fun checkAndRunBasicCommands(command: String, options: List<String>): Boolean
-    {
+    private fun checkAndRunBasicCommands(command: String, options: List<String>): Boolean {
         return when (command) {
             ".." -> {
                 goBack()
                 true
             }
+
             "exit" -> {
                 Microtik.app.stop()
                 throw Exception("Приложение остановлено")
             }
+
             else -> false
         }
     }
 
-    fun goToCommands(newCommand: AbstractCommands): Unit
-    {
+    private fun goToCommands(newCommand: AbstractCommands): Unit {
         traceCommands.add(currentCommands)
         currentCommands = newCommand
         currentPath += "/${newCommand.path}"
     }
 
-    fun goBack(): Unit
-    {
+    private fun goBack(): Unit {
         if (traceCommands.isNotEmpty()) {
             currentPath = currentPath.dropLast(currentCommands.path.length + 1)
             currentCommands = traceCommands.last()
@@ -88,10 +86,9 @@ class CliManager {
         }
     }
 
-    private fun isPath(command: String): Boolean
-    {
+    private fun isPath(command: String): Boolean {
         return try {
-            currentCommands::class.memberFunctions.single {function ->
+            currentCommands::class.memberFunctions.single { function ->
                 val commandAnnotation = function.findAnnotation<Command>()
                 commandAnnotation != null
                         && commandAnnotation.commandType == CommandType.PATH
@@ -107,8 +104,7 @@ class CliManager {
 
     fun cliOut(text: String): Unit = println(text)
 
-    fun cliIn(text: String?): String?
-    {
+    fun cliIn(text: String?): String? {
         if (text == null) {
             print(">>> $currentPath$ ")
         } else {
@@ -118,19 +114,17 @@ class CliManager {
         return readlnOrNull()
     }
 
-    private fun prepareCommand(command: String): String
-    {
+    private fun prepareCommand(command: String): String {
         var normalizedCommand: String = command
 
         if (command.last() == '/') {
-             normalizedCommand = command.dropLast(1)
+            normalizedCommand = command.dropLast(1)
         }
 
         return normalizedCommand.trim()
     }
 
-    private fun printHelp(commandName: String, errorMessage: String? = null, options: Options): Unit
-    {
+    private fun printHelp(commandName: String, errorMessage: String? = null, options: Options): Unit {
         if (errorMessage != null) {
             println(errorMessage)
         }
