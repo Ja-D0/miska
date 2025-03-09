@@ -39,7 +39,6 @@ abstract class CommandImpl(
      * @return [Any]? результат выполнения команды
      * @author Виктория Яковлева
      * @since 0.0.1
-     *
      */
     override fun runCommand(options: ArrayList<String>): Any? {
         val args = bindCommandOptions(extractOptions(), options)
