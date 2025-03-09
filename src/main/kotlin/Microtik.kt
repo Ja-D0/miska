@@ -7,5 +7,5 @@ object Microtik {
     lateinit var app: ApplicationImpl
 
     fun getBaseJarDir(): String =
-        File(this::class.java.protectionDomain.codeSource.location.toURI()).parentFile.toString()
+        File(Microtik::class.java.protectionDomain.codeSource.location.toURI()).parentFile.path
 }

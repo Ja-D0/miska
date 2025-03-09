@@ -7,11 +7,11 @@ import com.microtik.core.base.cli.commandLists.RootCommandsList
 import com.microtik.core.base.cli.exceptions.AnnotationNotFoundException
 import com.microtik.core.base.cli.exceptions.ApplicationException
 import com.microtik.core.base.cli.exceptions.CommandsListNotFoundException
-import com.microtik.core.base.interfaces.Application
-import com.microtik.core.base.interfaces.Response
 import com.microtik.core.base.config.Configurable
 import com.microtik.core.base.config.application.Config
 import com.microtik.core.base.config.configLoader.ConfigLoader
+import com.microtik.core.base.interfaces.Application
+import com.microtik.core.base.interfaces.Response
 import java.io.FileNotFoundException
 import kotlin.reflect.full.findAnnotation
 import com.microtik.core.base.Response as ResponseImpl

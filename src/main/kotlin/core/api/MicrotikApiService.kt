@@ -26,17 +26,21 @@ class MicrotikApiService private constructor() {
     }
 
     init {
-        val client: OkHttpClient = OkHttpClient.Builder()
+        val builder: OkHttpClient.Builder = OkHttpClient.Builder()
             .readTimeout(120, TimeUnit.SECONDS)
             .writeTimeout(120, TimeUnit.SECONDS)
             .connectTimeout(120, TimeUnit.SECONDS)
             .addInterceptor { chain ->
                 chain.proceed(chain.request().newBuilder().header("Authorization", getBasicCredentials()).build())
             }
-            .addInterceptor(HttpLoggingInterceptor { message -> println(message) }.apply {
-                level = HttpLoggingInterceptor.Level.BODY
-            })
-            .build()
+
+//        if (System.getProperty("APP_ENV_DEBUG").toBoolean()) {
+        builder.addInterceptor(HttpLoggingInterceptor { message -> println(message) }.apply {
+            level = HttpLoggingInterceptor.Level.BODY
+        })
+//        }
+
+        val client = builder.build()
 
         retrofit = Retrofit.Builder()
             .baseUrl("http://" + Microtik.app.getConfig().microtikApiConfig.microtikServerConfig.host + "/rest/")
