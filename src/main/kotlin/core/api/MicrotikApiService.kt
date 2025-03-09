@@ -4,7 +4,7 @@ import com.microtik.Microtik
 import com.microtik.core.api.endpoints.AddressApi
 import com.microtik.core.api.endpoints.AddressListsApi
 import com.microtik.core.api.endpoints.FirewallFilterApi
-import com.microtik.core.api.exceptions.FailedRequest
+import com.microtik.core.api.exceptions.FailedRequestException
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Response
@@ -35,7 +35,7 @@ class MicrotikApiService private constructor() {
             if (response.isSuccessful && response.body() != null) {
                 return response.body() as T
             } else {
-                throw FailedRequest(response.code(), response.body().toString(), response.message())
+                throw FailedRequestException(response.code(), response.body().toString(), response.message())
             }
         }
     }

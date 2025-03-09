@@ -1,7 +1,6 @@
-package com.microtik.core.commandLists
+package com.microtik.core.base.cli
 
 import com.microtik.Microtik
-import com.microtik.core.base.cli.CommandsListImpl
 import com.microtik.core.base.cli.annotations.Command
 import com.microtik.core.base.cli.annotations.CommandOption
 import com.microtik.core.base.cli.annotations.CommandType
