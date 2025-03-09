@@ -69,8 +69,8 @@ abstract class CommandsListImpl : CommandsList {
      *
      * @param [id] id команды, которую необходимо создать
      * @return экземпляр [CommandImpl]
-     * @throws [NotFoundCommandException], если реализация команды [id] не будет найдена или она не является публичной
-     * @throws [CommandConflictException], если реализаций команды [id] более одной
+     * @throws [NotFoundCommandException] если реализация команды [id] не будет найдена или она не является публичной
+     * @throws [CommandConflictException] если реализаций команды [id] более одной
      * @author Денис Чемерис
      * @since 0.0.1
      */
@@ -100,7 +100,7 @@ abstract class CommandsListImpl : CommandsList {
      *
      * @param [commandId] id команды для проверки
      * @return [Boolean], true, если команда является каталогом, иначе false
-     * @throws [PathConflictException], если реализаций команды [commandId] более одной
+     * @throws [PathConflictException] если реализаций команды [commandId] более одной
      * @author Денис Чемерис
      * @since 0.0.1
      */
