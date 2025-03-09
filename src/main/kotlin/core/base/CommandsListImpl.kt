@@ -1,7 +1,6 @@
 package com.microtik.core.base
 
 import com.microtik.Microtik
-import com.microtik.core.api.exceptions.FailedRequest
 import com.microtik.core.base.cli.annotations.Command
 import com.microtik.core.base.cli.annotations.CommandType
 import com.microtik.core.base.cli.exceptions.CommandConflictException
@@ -11,7 +10,6 @@ import com.microtik.core.base.cli.exceptions.ValidationErrorException
 import com.microtik.core.base.interfaces.CommandsList
 import org.apache.commons.cli.DefaultParser
 import org.apache.commons.cli.Options
-import retrofit2.Response
 import kotlin.reflect.KFunction
 import kotlin.reflect.KVisibility
 import kotlin.reflect.full.findAnnotation
@@ -92,40 +90,5 @@ abstract class CommandsListImpl : CommandsList {
         } catch (notFoundException: NoSuchElementException) {
             false
         }
-    }
-
-    /**
-     *
-     */
-    protected fun <T> runRequest(callable: () -> Response<T>): String {
-        val result: String
-
-        val response = callable()
-
-        if (response.isSuccessful && response.body() != null) {
-            result = if (response.body() is List<*>) {
-                (response.body()!! as List<*>).joinToString("\n") { it.toString() }
-            } else {
-                response.body()!!.toString()
-            }
-        } else {
-            throw FailedRequest(response.code(), response.body().toString(), response.message())
-        }
-
-        return result
-    }
-
-    protected fun <T> runRequestForList(callable: () -> Response<T>): T? {
-        val result: T?
-
-        val response = callable()
-
-        if (response.isSuccessful && response.body() != null) {
-            result = response.body()
-        } else {
-            throw FailedRequest(response.code(), response.body().toString(), response.message())
-        }
-
-        return result
     }
 }

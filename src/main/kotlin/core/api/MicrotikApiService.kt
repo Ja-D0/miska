@@ -4,8 +4,10 @@ import com.microtik.Microtik
 import com.microtik.core.api.endpoints.AddressApi
 import com.microtik.core.api.endpoints.AddressListsApi
 import com.microtik.core.api.endpoints.FirewallFilterApi
+import com.microtik.core.api.exceptions.FailedRequest
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
+import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.*
@@ -22,6 +24,19 @@ class MicrotikApiService private constructor() {
             }
 
             return instance!!
+        }
+
+        /**
+         *
+         */
+        fun <T> runRequest(callable: () -> Response<T>): T {
+            val response = callable()
+
+            if (response.isSuccessful && response.body() != null) {
+                return response.body() as T
+            } else {
+                throw FailedRequest(response.code(), response.body().toString(), response.message())
+            }
         }
     }
 

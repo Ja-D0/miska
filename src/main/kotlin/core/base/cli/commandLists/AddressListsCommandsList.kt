@@ -14,9 +14,11 @@ import java.io.File
 @CommandList("address-list")
 class AddressListsCommandsList : CommandsListImpl() {
     @Command("print", CommandType.COMMAND, "Show the elements")
-    fun commandPrint(): String = runRequest<ArrayList<AddressListsResponse>> {
-        MicrotikApiService.getInstance().getAddressListsApi().print().execute()
-    }
+    fun commandPrint(): String =
+        MicrotikApiService.runRequest<ArrayList<AddressListsResponse>> {
+            MicrotikApiService.getInstance().getAddressListsApi().print().execute()
+        }.joinToString("\n") { it.toString() }
+
 
     @Command("add", CommandType.COMMAND, "Adds to the list address")
     fun commandAdd(
@@ -26,9 +28,11 @@ class AddressListsCommandsList : CommandsListImpl() {
         address: String? = null,
         @CommandOption("t", "timeout", false, "Timeout")
         timeout: String? = null
-    ): String = runRequest {
-        MicrotikApiService.getInstance().getAddressListsApi().add(AddressListPayload(list, address, timeout)).execute()
-    }
+    ): String =
+        MicrotikApiService.runRequest {
+            MicrotikApiService.getInstance().getAddressListsApi().add(AddressListPayload(list, address, timeout))
+                .execute()
+        }.toString()
 
     @Command("edit", CommandType.COMMAND, "Editing the address")
     fun commandEdit(
@@ -41,32 +45,39 @@ class AddressListsCommandsList : CommandsListImpl() {
         @CommandOption("t", "timeout", false, "Timeout")
         timeout: String? = null
     ): String =
-        runRequest<AddressListsResponse> {
+        MicrotikApiService.runRequest {
             MicrotikApiService.getInstance().getAddressListsApi().edit(id, AddressListPayload(list, address, timeout))
                 .execute()
-        }
+        }.toString()
 
     @Command("disable", CommandType.COMMAND, "Turn off the rule")
     fun commandDisable(
         @CommandOption("i", "id", true, "ID Rules")
         id: String
-    ): String = runRequest<AddressListsResponse> {
-        MicrotikApiService.getInstance().getAddressListsApi().edit(id, AddressListPayload(disabled = true)).execute()
-    }
+    ): String =
+        MicrotikApiService.runRequest {
+            MicrotikApiService.getInstance().getAddressListsApi().edit(id, AddressListPayload(disabled = true))
+                .execute()
+        }.toString()
 
     @Command("enable", CommandType.COMMAND, "Turn on the rule")
     fun commandEnable(
         @CommandOption("i", "id", true, "ID Rules")
         id: String
-    ): String = runRequest<AddressListsResponse> {
-        MicrotikApiService.getInstance().getAddressListsApi().edit(id, AddressListPayload(disabled = false)).execute()
-    }
+    ): String =
+        MicrotikApiService.runRequest<AddressListsResponse> {
+            MicrotikApiService.getInstance().getAddressListsApi().edit(id, AddressListPayload(disabled = false))
+                .execute()
+        }.toString()
 
     @Command("remove", CommandType.COMMAND, "Remove the element")
     fun commandRemove(
         @CommandOption("i", "id", true, "Record number")
         id: String
-    ): String = runRequest<Unit> { MicrotikApiService.getInstance().getAddressListsApi().remove(id).execute() }
+    ): Unit =
+        MicrotikApiService.runRequest<Unit> {
+            MicrotikApiService.getInstance().getAddressListsApi().remove(id).execute()
+        }
 
     @Command("load-from-file", CommandType.COMMAND, "Load IP from file")
     fun commandLoadFromFile(
@@ -76,7 +87,9 @@ class AddressListsCommandsList : CommandsListImpl() {
         list: String
     ): String {
         val addressLists =
-            runRequestForList { MicrotikApiService.getInstance().getAddressListsApi().print(list).execute() }
+            MicrotikApiService.runRequest {
+                MicrotikApiService.getInstance().getAddressListsApi().print(list).execute()
+            }
 
         if (addressLists!!.isEmpty()) {
             Microtik.app.cliOut("The list \"$list\" does not exist; it will be created automatically")
@@ -88,7 +101,7 @@ class AddressListsCommandsList : CommandsListImpl() {
 
         File(Microtik.getBaseJarDir() + File.separator + "configs" + File.separator + "ip" + File.separator + fileName).forEachLine { address ->
             if (ipRegex.matches(address)) {
-                val addressList = runRequestForList {
+                val addressList = MicrotikApiService.runRequest {
                     MicrotikApiService.getInstance().getAddressListsApi().add(AddressListPayload(list, address))
                         .execute()
                 }
