@@ -14,14 +14,32 @@ import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.full.isSubtypeOf
 
 /**
+ * Базовый класс, реализующий поведение команды
  *
+ * @author Виктория Яковлева
+ * @since 0.0.1
  */
 abstract class CommandImpl(
+    /**
+     * Идентификатор команды
+     *
+     * @author Виктория Яковлева
+     * @since 0.0.1
+     */
     val id: String,
     private val owner: CommandsListImpl,
     private val command: KFunction<Any?>
 ) : Command {
 
+    /**
+     * Запускает выполнение команды с указанными параметрами
+     *
+     * @param [options] массив с параметрами, которые будут переданы команде при запуске
+     * @return [Any]? результат выполнения команды
+     * @author Виктория Яковлева
+     * @since 0.0.1
+     *
+     */
     override fun runCommand(options: ArrayList<String>): Any? {
         val args = bindCommandOptions(extractOptions(), options)
 
@@ -29,9 +47,15 @@ abstract class CommandImpl(
     }
 
     /**
+     * Соотносит массив параметров команды с соответствующими аргументами функции реализации команды
      *
+     * @param [options] экземпляр [Options], содержащий данные об параметрах команды на основе указанных [CommandOption]
+     * @param [params] массив с параметрами
+     * @return [Map] массив соотнесенных аргументов команды
+     * @author Виктория Яковлева
+     * @since 0.0.1
      */
-    fun bindCommandOptions(options: Options, params: ArrayList<String>): Map<KParameter, Any> {
+    private fun bindCommandOptions(options: Options, params: ArrayList<String>): Map<KParameter, Any> {
         val linkedParams = mutableMapOf(Pair<KParameter, Any>(command.parameters[0], owner))
 
         val commandLine = parseParams(options, params)
@@ -50,7 +74,17 @@ abstract class CommandImpl(
         return linkedParams
     }
 
-    fun resolveParameterType(value: String, type: KType): Any {
+    /**
+     * Разрешает тип значения параметра на основе типа аргумента команды
+     *
+     * @param [value] значение параметра
+     * @param [type] тип необходимый для аргумента команды
+     * @return [Any] результат преобразования
+     * @throws [ConvertParameterException] если значение параметра [value] невозможно преобразовать к типу [type]
+     * @author Виктория Яковлева
+     * @since 0.0.1
+     */
+    private fun resolveParameterType(value: String, type: KType): Any {
         return when {
             type.isSubtypeOf(Boolean::class.createType(nullable = true)) -> value.toBoolean()
             type.isSubtypeOf(Int::class.createType(nullable = true)) -> value.toIntOrNull()
@@ -71,9 +105,16 @@ abstract class CommandImpl(
     }
 
     /**
+     * Парсит параметры [params], введенные пользователем и соотносит их с необходимыми аргументами команды [options]
      *
+     * @param [options] экземпляр [Options], содержащий данные об параметрах команды на основе указанных [CommandOption]
+     * @param [params] массив с параметрами
+     * @throws [ValidationErrorException] если не указан обязательный параметр или не указано значение для
+     * обязательного параметра или указан неизвестный параметр
+     * @author Виктория Яковлева
+     * @since 0.0.1
      */
-    fun parseParams(options: Options, params: ArrayList<String>): CommandLine {
+    private fun parseParams(options: Options, params: ArrayList<String>): CommandLine {
         return try {
             DefaultParser().parse(options, params.toTypedArray())
         } catch (missingOptionException: MissingOptionException) {
@@ -86,7 +127,13 @@ abstract class CommandImpl(
     }
 
     /**
+     * Извлекает параметры команды на основе указанных [CommandOption]
      *
+     * @return экземпляр [Options]
+     * @throws CommandOptionAnnotationNotFoundException если у обязательного аргумента команды не указана
+     * аннотация [CommandOption]
+     * @author Виктория Яковлева
+     * @since 0.0.1
      */
     fun extractOptions(): Options {
         val options = Options()
