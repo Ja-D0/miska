@@ -1,7 +1,7 @@
-package com.microtik.core.base
+package com.microtik.core.base.cli
 
 import com.microtik.Microtik
-import com.microtik.core.base.interfaces.Response
+import com.microtik.core.base.cli.interfaces.Response
 
 /**
  * Класс, реализующий ответ на запрос выполнения команды

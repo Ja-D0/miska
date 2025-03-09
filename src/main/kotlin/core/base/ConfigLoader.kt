@@ -1,9 +1,9 @@
-package com.microtik.core.base.config.configLoader
+package com.microtik.core.base
 
 import com.google.gson.Gson
 import com.google.gson.JsonSyntaxException
 import com.microtik.Microtik
-import com.microtik.core.base.config.application.Config
+import com.microtik.core.base.config.AbstractConfigLoader
 import com.microtik.core.base.config.exceptions.ConfigFileNotFoundException
 import com.microtik.core.base.config.exceptions.ConfigSyntaxException
 import com.microtik.core.base.config.exceptions.LoadConfigException

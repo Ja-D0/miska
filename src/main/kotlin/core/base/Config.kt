@@ -1,4 +1,4 @@
-package com.microtik.core.base.config.application
+package com.microtik.core.base
 
 import com.google.gson.annotations.SerializedName
 import com.microtik.core.base.config.AbstractConfig

@@ -1,5 +1,8 @@
 package com.microtik.core.base.interfaces
 
+import com.microtik.core.base.cli.interfaces.Request
+import com.microtik.core.base.cli.interfaces.Response
+
 
 /**
  * Интерфейс для реализации приложения

@@ -1,4 +1,4 @@
-package com.microtik.core.base
+package com.microtik.core.base.cli
 
 import com.microtik.Microtik
 import com.microtik.core.base.cli.annotations.Command
@@ -7,7 +7,7 @@ import com.microtik.core.base.cli.exceptions.CommandConflictException
 import com.microtik.core.base.cli.exceptions.NotFoundCommandException
 import com.microtik.core.base.cli.exceptions.PathConflictException
 import com.microtik.core.base.cli.exceptions.ValidationErrorException
-import com.microtik.core.base.interfaces.CommandsList
+import com.microtik.core.base.cli.interfaces.CommandsList
 import org.apache.commons.cli.DefaultParser
 import org.apache.commons.cli.Options
 import kotlin.reflect.KFunction

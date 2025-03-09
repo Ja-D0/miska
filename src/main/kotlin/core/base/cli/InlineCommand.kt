@@ -1,4 +1,4 @@
-package com.microtik.core.base
+package com.microtik.core.base.cli
 
 import kotlin.reflect.KFunction
 

@@ -1,4 +1,4 @@
-package com.microtik.core.base.config
+package com.microtik.core.base.interfaces
 
 /**
  * Интерфейс предоставляет объекту возможность загружать конфигурационный файл

@@ -1,10 +1,10 @@
-package com.microtik.core.base
+package com.microtik.core.base.cli
 
 import com.microtik.core.base.cli.annotations.CommandOption
 import com.microtik.core.base.cli.exceptions.CommandOptionAnnotationNotFoundException
 import com.microtik.core.base.cli.exceptions.ConvertParameterException
 import com.microtik.core.base.cli.exceptions.ValidationErrorException
-import com.microtik.core.base.interfaces.Command
+import com.microtik.core.base.cli.interfaces.Command
 import org.apache.commons.cli.*
 import kotlin.reflect.KFunction
 import kotlin.reflect.KParameter

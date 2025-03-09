@@ -1,6 +1,6 @@
-package com.microtik.core.base.cli.commandLists
+package com.microtik.core.commandLists
 
-import com.microtik.core.base.CommandsListImpl
+import com.microtik.core.base.cli.CommandsListImpl
 import com.microtik.core.base.cli.annotations.Command
 import com.microtik.core.base.cli.annotations.CommandList
 import com.microtik.core.base.cli.annotations.CommandType
@@ -26,6 +26,6 @@ class RootCommandsList : CommandsListImpl() {
     /**
      *
      */
-    @Command("ip", com.microtik.core.base.cli.annotations.CommandType.PATH, "")
+    @Command("ip", CommandType.PATH, "")
     fun getIpCommands(): IpCommandsList = IpCommandsList()
 }

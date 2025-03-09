@@ -1,4 +1,4 @@
-package com.microtik.core.base.interfaces
+package com.microtik.core.base.cli.interfaces
 
 /**
  * Интерфейс для реализации ответа на запрос выполнения команды
