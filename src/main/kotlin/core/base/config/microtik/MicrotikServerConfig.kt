@@ -3,10 +3,10 @@ package com.microtik.core.base.config.microtik
 import com.microtik.core.base.config.AbstractConfig
 
 data class MicrotikServerConfig(
-    val host: String,
-    val port: Int,
-    val login: String,
-    val password: String
+    val host: String = "localhost",
+    val port: Int = 80,
+    val login: String = "admin",
+    val password: String = ""
 ) : AbstractConfig() {
 
     override fun toString(): String {

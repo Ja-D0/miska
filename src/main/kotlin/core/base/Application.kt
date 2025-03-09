@@ -6,7 +6,7 @@ import com.microtik.core.base.cli.interfaces.Response
 /**
  *
  */
-class Application : ApplicationImpl() {
+class Application(configFilePath: String? = null) : ApplicationImpl(configFilePath) {
 
     /**
      * Обрабатывает запрос команды пользователя

@@ -29,7 +29,6 @@ class ConfigCommandsList : CommandsListImpl() {
             server?.stop()
             server = null
             "OK"
-
         }
     }
 }
