@@ -8,7 +8,7 @@ plugins {
 val microtikEnvIsDev: String by project
 
 group = "com.microtik"
-version = "0.1.1-spring-${if (microtikEnvIsDev.toBoolean()) "debug" else ""}"
+version = "0.0.1-${if (microtikEnvIsDev.toBoolean()) "debug" else ""}"
 
 repositories {
     mavenCentral()
