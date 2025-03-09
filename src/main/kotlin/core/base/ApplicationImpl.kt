@@ -161,7 +161,14 @@ abstract class ApplicationImpl(configFilePath: String? = null) : Application, Co
     }
 
     /**
+     * Переходит на каталог назад, после этого он становится активным и можно выполнять его
+     * встроенные команды с помощью [CommandsListImpl.runCommand]
      *
+     * Также данный метод изменяет текущий каталог [currentPath] для вывода пользователю
+     *
+     * @return [Unit]
+     * @author Денис Чемерис
+     * @since 0.0.1
      */
     fun goBack(): Unit {
         if (traceCommandsLists.size != 1) {
