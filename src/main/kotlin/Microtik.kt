@@ -1,10 +1,10 @@
 package com.microtik
 
-import com.microtik.core.application.AbstractApplication
+import com.microtik.core.base.ApplicationImpl
 import java.io.File
 
 object Microtik {
-    lateinit var app: AbstractApplication
+    lateinit var app: ApplicationImpl
 
     fun getBaseJarDir(): String =
         File(this::class.java.protectionDomain.codeSource.location.toURI()).parentFile.toString()
