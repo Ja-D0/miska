@@ -10,6 +10,7 @@ import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.net.ConnectException
 import java.util.*
 import java.util.concurrent.TimeUnit
 
@@ -30,7 +31,13 @@ class MicrotikApiService private constructor() {
          *
          */
         fun <T> runRequest(callable: () -> Response<T>): T {
-            val response = callable()
+            val response: Response<T>
+
+            try {
+                response = callable()
+            } catch (connectException: ConnectException) {
+                throw FailedRequestException(500, "", connectException.message)
+            }
 
             if (response.isSuccessful && response.body() != null) {
                 return response.body() as T

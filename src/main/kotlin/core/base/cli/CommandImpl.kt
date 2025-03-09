@@ -6,6 +6,7 @@ import com.microtik.core.base.cli.exceptions.ConvertParameterException
 import com.microtik.core.base.cli.exceptions.ValidationErrorException
 import com.microtik.core.base.cli.interfaces.Command
 import org.apache.commons.cli.*
+import java.lang.reflect.InvocationTargetException
 import kotlin.reflect.KFunction
 import kotlin.reflect.KParameter
 import kotlin.reflect.KType
@@ -43,7 +44,11 @@ abstract class CommandImpl(
     override fun runCommand(options: ArrayList<String>): Any? {
         val args = bindCommandOptions(extractOptions(), options)
 
-        return command.callBy(args)
+        return try {
+            command.callBy(args)
+        } catch (invocationTargetException: InvocationTargetException) {
+            throw invocationTargetException.cause!!
+        }
     }
 
     /**
