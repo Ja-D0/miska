@@ -16,9 +16,22 @@ import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.full.memberFunctions
 
 /**
+ * Базовый класс, реализующий поведение списка команд и их запуска
  *
+ * @author Денис Чемерис
+ * @since 0.0.1
  */
 abstract class CommandsListImpl : CommandsList {
+
+    /**
+     * Выполняет команду с параметрами по указанному id
+     *
+     * @param [id] идентификатор команды
+     * @param [params] массив с параметрами для функции команды
+     * @return [Any]? результат выполнения команды
+     * @author Денис Чемерис
+     * @since 0.0.1
+     */
     override fun runCommand(id: String, params: ArrayList<String>): Any? {
         if (isHelpRequest(params)) {
             return Microtik.app.runCommand("help", arrayListOf("--id", id))
@@ -33,9 +46,13 @@ abstract class CommandsListImpl : CommandsList {
     }
 
     /**
+     * Проверяет, является ли текущая команда запросом на вывод помощи по команде
      *
+     * @return [Boolean], true, если это запрос вывода справки по команде, иначе false
+     * @author Денис Чемерис
+     * @since 0.0.1
      */
-    fun isHelpRequest(params: ArrayList<String>): Boolean {
+    private fun isHelpRequest(params: ArrayList<String>): Boolean {
         if (params.isEmpty()) {
             return false
         }
@@ -48,7 +65,14 @@ abstract class CommandsListImpl : CommandsList {
     }
 
     /**
+     * Создает экземпляр команды [CommandImpl] по ее идентификатору [id]
      *
+     * @param [id] id команды, которую необходимо создать
+     * @return экземпляр [CommandImpl]
+     * @throws [NotFoundCommandException], если реализация команды [id] не будет найдена или она не является публичной
+     * @throws [CommandConflictException], если реализаций команды [id] более одной
+     * @author Денис Чемерис
+     * @since 0.0.1
      */
     fun createCommand(id: String): CommandImpl {
         val func: KFunction<*>
@@ -72,9 +96,13 @@ abstract class CommandsListImpl : CommandsList {
     }
 
     /**
-     * Проверяет, является команда каталогом
+     * Проверяет, является ли команда с идентификатором [commandId] новым каталогом
      *
-     *
+     * @param [commandId] id команды для проверки
+     * @return [Boolean], true, если команда является каталогом, иначе false
+     * @throws [PathConflictException], если реализаций команды [commandId] более одной
+     * @author Денис Чемерис
+     * @since 0.0.1
      */
     fun isPath(commandId: String): Boolean {
         return try {
