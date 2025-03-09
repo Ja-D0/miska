@@ -114,4 +114,18 @@ abstract class CommandsListImpl : CommandsList {
 
         return result
     }
+
+    protected fun <T> runRequestForList(callable: () -> Response<T>): T? {
+        val result: T?
+
+        val response = callable()
+
+        if (response.isSuccessful && response.body() != null) {
+            result = response.body()
+        } else {
+            throw FailedRequest(response.code(), response.body().toString(), response.message())
+        }
+
+        return result
+    }
 }

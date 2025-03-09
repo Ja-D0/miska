@@ -1,5 +1,6 @@
 package com.microtik.core.base.cli.commandLists
 
+import com.microtik.Microtik
 import com.microtik.core.api.MicrotikApiService
 import com.microtik.core.api.requestModels.AddressListPayload
 import com.microtik.core.api.responseModels.AddressListsResponse
@@ -8,6 +9,7 @@ import com.microtik.core.base.cli.annotations.Command
 import com.microtik.core.base.cli.annotations.CommandList
 import com.microtik.core.base.cli.annotations.CommandOption
 import com.microtik.core.base.cli.annotations.CommandType
+import java.io.File
 
 @CommandList("address-list")
 class AddressListsCommandsList : CommandsListImpl() {
@@ -65,4 +67,44 @@ class AddressListsCommandsList : CommandsListImpl() {
         @CommandOption("i", "id", true, "Record number")
         id: String
     ): String = runRequest<Unit> { MicrotikApiService.getInstance().getAddressListsApi().remove(id).execute() }
+
+    @Command("load-from-file", CommandType.COMMAND, "Load IP from file")
+    fun commandLoadFromFile(
+        @CommandOption("f", "filepath", true, "Path to the file")
+        fileName: String,
+        @CommandOption("l", "list", true, "Name of the list; if it does not exist, it will be created automatically")
+        list: String
+    ): String {
+        val addressLists =
+            runRequestForList { MicrotikApiService.getInstance().getAddressListsApi().print(list).execute() }
+
+        if (addressLists!!.isEmpty()) {
+            Microtik.app.cliOut("The list \"$list\" does not exist; it will be created automatically")
+        }
+
+        val regStr = "^([0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3})(\\/(3[0-2]|[12]?[0-9]))?\$"
+        val ipRegex = Regex(regStr)
+        var lineIndex = 1
+
+        File(Microtik.getBaseJarDir() + File.separator + "configs" + File.separator + "ip" + File.separator + fileName).forEachLine { address ->
+            if (ipRegex.matches(address)) {
+                val addressList = runRequestForList {
+                    MicrotikApiService.getInstance().getAddressListsApi().add(AddressListPayload(list, address))
+                        .execute()
+                }
+
+                if (addressList != null) {
+                    Microtik.app.cliOut("IP address ${addressList.address} added to the list \"${addressList.list}\"")
+                } else {
+                    Microtik.app.cliOut("Error adding IP address $address to the list $list")
+                }
+            } else {
+                Microtik.app.cliOut("IP address $address is not valid on line $lineIndex. Skipping.")
+            }
+
+            lineIndex++
+        }
+
+        return "File processing completed"
+    }
 }
