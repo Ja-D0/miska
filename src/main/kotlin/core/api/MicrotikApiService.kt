@@ -1,10 +1,13 @@
 package com.microtik.core.api
 
+import com.google.gson.Gson
 import com.microtik.Microtik
 import com.microtik.core.api.endpoints.AddressApi
 import com.microtik.core.api.endpoints.AddressListsApi
 import com.microtik.core.api.endpoints.FirewallFilterApi
 import com.microtik.core.api.exceptions.FailedRequestException
+import com.microtik.core.api.responseModels.ErrorResponse
+import com.microtik.core.base.HttpFileLogger
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Response
@@ -36,12 +39,19 @@ class MicrotikApiService private constructor() {
             try {
                 response = callable()
             } catch (connectException: ConnectException) {
-                throw FailedRequestException(500, "", connectException.message)
+                throw FailedRequestException(500, "", connectException.message!!)
             }
 
-            if (response.isSuccessful && response.body() != null) {
-                return response.body() as T
+            if (response.isSuccessful) {
+                return response.body()!!
+
             } else {
+                if (response.errorBody() != null) {
+                    val errorBody = Gson().fromJson(response.errorBody()!!.string(), ErrorResponse::class.java)
+
+                    throw FailedRequestException(errorBody.error, errorBody.detail, errorBody.detail)
+                }
+
                 throw FailedRequestException(response.code(), response.body().toString(), response.message())
             }
         }
@@ -56,11 +66,11 @@ class MicrotikApiService private constructor() {
                 chain.proceed(chain.request().newBuilder().header("Authorization", getBasicCredentials()).build())
             }
 
-//        if (System.getProperty("APP_ENV_DEBUG").toBoolean()) {
-        builder.addInterceptor(HttpLoggingInterceptor { message -> println(message) }.apply {
-            level = HttpLoggingInterceptor.Level.BODY
-        })
-//        }
+        if (Microtik.app.getConfig().logsConfig.httpLogsConfig.path.isNotBlank()) {
+            builder.addInterceptor(HttpLoggingInterceptor(HttpFileLogger()).apply {
+                level = HttpLoggingInterceptor.Level.BODY
+            })
+        }
 
         val client = builder.build()
 
