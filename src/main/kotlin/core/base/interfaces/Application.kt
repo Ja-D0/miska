@@ -1,5 +1,8 @@
 package com.microtik.core.base.interfaces
 
+import com.microtik.core.base.cli.CommandsListImpl
+import com.microtik.core.base.cli.exceptions.CommandsListNotFoundException
+import com.microtik.core.base.cli.interfaces.CommandsList
 import com.microtik.core.base.cli.interfaces.Request
 import com.microtik.core.base.cli.interfaces.Response
 
@@ -28,6 +31,62 @@ interface Application {
      * @since 0.0.1
      */
     fun handleCommandRequest(request: Request): Response
+
+    /**
+     * Запускает выполнение команды.
+     *
+     * @return экземпляр ответа [Response], содержащий ответ команды
+     * @author Денис Чемерис
+     * @since 0.0.1
+     */
+    fun runCommand(command: String, params: ArrayList<String>): Response
+
+    /**
+     * Возвращает экземпляр текущего каталога
+     *
+     * @return экземпляр [CommandsListImpl]
+     * @throws [CommandsListNotFoundException], если текущий каталог пользователя не найден
+     * @author Денис Чемерис
+     * @since 0.0.1
+     */
+
+    fun getCurrentCommandsList(): CommandsList
+
+    /**
+     * Переходит в каталог экземпляра [newCommandsList]
+     *
+     * @return [Unit]
+     * @author Денис Чемерис
+     * @since 0.0.1
+     */
+    fun goToCommandsList(newCommandsList: CommandsList): Boolean
+
+    /**
+     * Переходит на каталог назад.
+     *
+     * @return [Unit]
+     * @author Денис Чемерис
+     * @since 0.0.1
+     */
+    fun goBack()
+
+
+    /**
+     * Выводит данные и ожидает ввод данных
+     *
+     * @author Денис Чемерис
+     * @since 0.0.1
+     */
+    fun cliIn(message: String? = null): String?
+
+
+    /**
+     * Выводит данные
+     *
+     * @author Денис Чемерис
+     * @since 0.0.1
+     */
+    fun cliOut(message: String)
 
     /**
      * Запускает приложения для выполнения команд пользователя

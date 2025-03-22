@@ -27,7 +27,7 @@ abstract class CommandImpl(
      * @author Виктория Яковлева
      * @since 0.0.1
      */
-    val id: String,
+    override val id: String,
     private val owner: CommandsListImpl,
     private val command: KFunction<Any?>
 ) : Command {
@@ -50,16 +50,72 @@ abstract class CommandImpl(
         }
     }
 
+
+    /**
+     * Запускает выполнение команды без параметров
+     *
+     * @return [Any]? результат выполнения команды
+     * @author Виктория Яковлева
+     * @since 0.0.1
+     */
+    override fun runCommand(): Any? {
+        return try {
+            command.call(owner)
+        } catch (invocationTargetException: InvocationTargetException) {
+            throw invocationTargetException.cause!!
+        }
+    }
+
+    /**
+     * Извлекает параметры команды на основе указанных [CommandOption]
+     *
+     * @return экземпляр [List]
+     * @throws CommandOptionAnnotationNotFoundException если у обязательного аргумента команды не указана
+     * аннотация [CommandOption]
+     * @author Виктория Яковлева
+     * @since 0.0.1
+     */
+    override fun extractOptions(): List<KParameter> {
+        val options = mutableListOf<KParameter>()
+
+        command.parameters.drop(1).forEach { parameter ->
+            val annotation = parameter.findAnnotation<CommandOption>()
+            if (annotation != null) {
+                options.add(parameter)
+            } else if (!parameter.isOptional) {
+                throw CommandOptionAnnotationNotFoundException(
+                    "Missing ${CommandOption::class.qualifiedName} for required parameter: \"${parameter.name}\" " +
+                            "in ${owner::class.qualifiedName}::${command.name}"
+                )
+            }
+        }
+
+        return options
+    }
+
+    /**
+     * Извлекает параметры команды на основе указанных [CommandOption]
+     *
+     * @return экземпляр [Options]
+     * @throws CommandOptionAnnotationNotFoundException если у обязательного аргумента команды не указана
+     * аннотация [CommandOption]
+     * @author Виктория Яковлева
+     * @since 0.0.1
+     */
+    override fun extractOptionsAsOptions(): Options = listOptionsAsOptions(extractOptions())
+
     /**
      * Соотносит массив параметров команды с соответствующими аргументами функции реализации команды
      *
-     * @param [options] экземпляр [Options], содержащий данные об параметрах команды на основе указанных [CommandOption]
+     * @param [listOptions] экземпляр [List], содержащий данные об параметрах команды на основе указанных [CommandOption]
      * @param [params] массив с параметрами
      * @return [Map] массив соотнесенных аргументов команды
      * @author Виктория Яковлева
      * @since 0.0.1
      */
-    private fun bindCommandOptions(options: Options, params: ArrayList<String>): Map<KParameter, Any> {
+    private fun bindCommandOptions(listOptions: List<KParameter>, params: ArrayList<String>): Map<KParameter, Any> {
+        val options = listOptionsAsOptions(listOptions)
+
         val linkedParams = mutableMapOf(Pair<KParameter, Any>(command.parameters[0], owner))
 
         val commandLine = parseParams(options, params)
@@ -131,7 +187,7 @@ abstract class CommandImpl(
     }
 
     /**
-     * Извлекает параметры команды на основе указанных [CommandOption]
+     * Преобразует массив [List] с параметрами в экземпляр класс [Options]
      *
      * @return экземпляр [Options]
      * @throws CommandOptionAnnotationNotFoundException если у обязательного аргумента команды не указана
@@ -139,10 +195,10 @@ abstract class CommandImpl(
      * @author Виктория Яковлева
      * @since 0.0.1
      */
-    fun extractOptions(): Options {
+    private fun listOptionsAsOptions(listOptions: List<KParameter>): Options {
         val options = Options()
 
-        command.parameters.drop(1).forEach { parameter ->
+        listOptions.drop(1).forEach { parameter ->
             val annotation = parameter.findAnnotation<CommandOption>()
             if (annotation != null) {
                 val option = Option(annotation.shortName, annotation.longName, true, annotation.description)

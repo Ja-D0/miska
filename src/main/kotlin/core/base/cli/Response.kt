@@ -17,7 +17,7 @@ class Response : Response {
      * @author Виктория Яковлева
      * @since 0.0.1
      */
-    var data: String? = null
+    override var data: String? = null
 
 
     /**

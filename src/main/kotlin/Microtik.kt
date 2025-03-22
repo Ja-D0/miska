@@ -1,10 +1,10 @@
 package com.microtik
 
-import com.microtik.core.base.ApplicationImpl
+import com.microtik.core.base.interfaces.Application
 import java.io.File
 
 object Microtik {
-    lateinit var app: ApplicationImpl
+    lateinit var app: Application
 
     fun getBaseJarDir(): String {
         var str = Microtik::class.java.protectionDomain.codeSource.location.toURI().toString()

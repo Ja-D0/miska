@@ -8,6 +8,7 @@ import com.microtik.core.base.cli.annotations.CommandList
 import com.microtik.core.base.cli.exceptions.AnnotationNotFoundException
 import com.microtik.core.base.cli.exceptions.ApplicationException
 import com.microtik.core.base.cli.exceptions.CommandsListNotFoundException
+import com.microtik.core.base.cli.interfaces.CommandsList
 import com.microtik.core.base.cli.interfaces.Response
 import com.microtik.core.base.interfaces.Application
 import com.microtik.core.base.interfaces.Configurable
@@ -25,8 +26,8 @@ import com.microtik.core.base.cli.Response as ResponseImpl
 abstract class ApplicationImpl(configFilePath: String? = null) : Application, Configurable {
     private var isRunning: Boolean = false
     private lateinit var config: Config
-    private val traceCommandsLists: MutableList<CommandsListImpl> = mutableListOf(RootCommandsList())
-    private val inlineCommandsList: InlineCommandsList = InlineCommandsList()
+    private val traceCommandsLists: MutableList<CommandsList> = mutableListOf(RootCommandsList())
+    private val inlineCommandsList: CommandsList = InlineCommandsList()
     private var currentPath: String
 
     init {
@@ -42,7 +43,7 @@ abstract class ApplicationImpl(configFilePath: String? = null) : Application, Co
      * @author Денис Чемерис
      * @since 0.0.1
      */
-    private fun getCommandsListPath(commandsList: CommandsListImpl): String {
+    private fun getCommandsListPath(commandsList: CommandsList): String {
         val annotation = commandsList::class.findAnnotation<CommandList>()
             ?: throw AnnotationNotFoundException(
                 "It is necessary to specify the CommandList annotation for ${commandsList::class.qualifiedName}"
@@ -88,17 +89,17 @@ abstract class ApplicationImpl(configFilePath: String? = null) : Application, Co
      * @author Денис Чемерис
      * @since 0.0.1
      */
-    fun runCommand(command: String, params: ArrayList<String>): Response {
+    override fun runCommand(command: String, params: ArrayList<String>): Response {
         val commands = prepareCommand(command).split("/")
         var response = ResponseImpl()
 
         for (commandId in commands) {
-            if (inlineCommandsList.isInlineCommand(commandId)) {
+            if (inlineCommandsList.hasCommand(commandId)) {
                 inlineCommandsList.runCommand(commandId, params)
                 continue
             }
 
-            if (getCurrentCommandsList().isPath(commandId)) {
+            if (getCurrentCommandsList().commandIsPath(commandId)) {
                 val result = getCurrentCommandsList().runCommand(commandId, ArrayList())
 
                 if (result !is CommandsListImpl) {
@@ -131,9 +132,8 @@ abstract class ApplicationImpl(configFilePath: String? = null) : Application, Co
      * @author Денис Чемерис
      * @since 0.0.1
      */
-    fun getCurrentCommandsList() =
+    override fun getCurrentCommandsList() =
         traceCommandsLists.lastOrNull() ?: throw CommandsListNotFoundException("Current commands list not found")
-
 
     private fun prepareCommand(command: String): String {
         var normalizedCommand: String = command
@@ -155,9 +155,11 @@ abstract class ApplicationImpl(configFilePath: String? = null) : Application, Co
      * @author Денис Чемерис
      * @since 0.0.1
      */
-    fun goToCommandsList(newCommandsList: CommandsListImpl) {
+    override fun goToCommandsList(newCommandsList: CommandsList): Boolean {
         traceCommandsLists.add(newCommandsList)
         currentPath += "/${getCommandsListPath(newCommandsList)}"
+
+        return true
     }
 
     /**
@@ -170,7 +172,7 @@ abstract class ApplicationImpl(configFilePath: String? = null) : Application, Co
      * @author Денис Чемерис
      * @since 0.0.1
      */
-    fun goBack(): Unit {
+    override fun goBack(): Unit {
         if (traceCommandsLists.size != 1) {
             currentPath = currentPath.dropLast(getCommandsListPath(getCurrentCommandsList()).length + 1)
             traceCommandsLists.removeLast()
@@ -191,10 +193,10 @@ abstract class ApplicationImpl(configFilePath: String? = null) : Application, Co
                 handleCommandRequest(Request()).send()
             } catch (exception: ApplicationException) {
                 if (exception.criticalError) {
-                    cliOut("!!! ${exception.message!!}")
+                    cliOut("!!! $exception")
                     stop()
                 } else {
-                    cliOut(exception.message!!)
+                    cliOut(exception.message)
                 }
             }
         }
@@ -229,7 +231,7 @@ abstract class ApplicationImpl(configFilePath: String? = null) : Application, Co
      * @author Денис Чемерис
      * @since 0.0.1
      */
-    fun cliIn(message: String? = null): String? {
+    override fun cliIn(message: String?): String? {
         if (message == null) {
             print(">>> $currentPath$ ")
         } else {
@@ -245,5 +247,5 @@ abstract class ApplicationImpl(configFilePath: String? = null) : Application, Co
      * @author Денис Чемерис
      * @since 0.0.1
      */
-    fun cliOut(message: String): Unit = println(message)
+    override fun cliOut(message: String): Unit = println(message)
 }
