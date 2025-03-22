@@ -6,4 +6,4 @@ package com.microtik.core.base.cli.exceptions
  * @author Денис Чемерис
  * @since 0.0.1
  */
-class AnnotationNotFoundException(override val message: String?) : ApplicationException(message, true)
+class AnnotationNotFoundException(override val message: String) : ApplicationException(message, true)

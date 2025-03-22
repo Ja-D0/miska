@@ -4,6 +4,10 @@ import com.microtik.core.base.cli.exceptions.ApplicationException
 
 class FailedRequestException(
     val statusCode: Int,
-    val responseBody: String? = null,
-    override val message: String? = null
-) : ApplicationException(message)
+    val detail: String,
+    override val message: String
+) : ApplicationException(detail) {
+    override fun toString(): String {
+        return "statusCode: ${statusCode}, message: ${message}, detail: $detail"
+    }
+}

@@ -7,7 +7,7 @@ package com.microtik.core.base.cli.exceptions
  * @since 0.0.1
  */
 open class ApplicationException(
-    override val message: String?,
+    override val message: String,
 
     /**
      * Указывает, является ли ошибка критичной, если это так - приложение прекратит свою работу
@@ -16,4 +16,8 @@ open class ApplicationException(
      * @since 0.0.1
      */
     open val criticalError: Boolean = false
-) : RuntimeException()
+) : RuntimeException() {
+    override fun toString(): String {
+        return message
+    }
+}
