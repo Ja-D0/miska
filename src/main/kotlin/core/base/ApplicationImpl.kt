@@ -12,6 +12,9 @@ import com.microtik.core.base.cli.interfaces.CommandsList
 import com.microtik.core.base.cli.interfaces.Response
 import com.microtik.core.base.interfaces.Application
 import com.microtik.core.base.interfaces.Configurable
+import com.microtik.core.base.logger.Dispatcher
+import com.microtik.core.base.logger.DispatcherImpl
+import com.microtik.core.base.logger.FileTarget
 import com.microtik.core.commandLists.RootCommandsList
 import java.io.FileNotFoundException
 import kotlin.reflect.full.findAnnotation
@@ -28,11 +31,36 @@ abstract class ApplicationImpl(configFilePath: String? = null) : Application, Co
     private lateinit var config: Config
     private val traceCommandsLists: MutableList<CommandsList> = mutableListOf(RootCommandsList())
     private val inlineCommandsList: CommandsList = InlineCommandsList()
-    private var currentPath: String
+    private lateinit var currentPath: String
 
     init {
-        loadConfig(configFilePath)
-        currentPath = getCommandsListPath(getCurrentCommandsList())
+        try {
+            loadConfig(configFilePath)
+            initLogger(config)
+            currentPath = getCommandsListPath(getCurrentCommandsList())
+        } catch (e: Exception) {
+            System.exit(1)
+        }
+    }
+
+    private fun initLogger(config: Config) {
+        val dispatcher: Dispatcher = DispatcherImpl()
+        dispatcher.registerTarget(
+            FileTarget(
+                config.logsConfig.appLogsConfig.filename,
+                config.logsConfig.appLogsConfig.path,
+                listOf("info", "alert")
+            )
+        )
+        dispatcher.registerTarget(
+            FileTarget(
+                config.logsConfig.alertLogsConfig.filename,
+                config.logsConfig.alertLogsConfig.path,
+                listOf("alert")
+            )
+        )
+
+        dispatcher.setLogger(Microtik.logger)
     }
 
     /**
@@ -75,7 +103,10 @@ abstract class ApplicationImpl(configFilePath: String? = null) : Application, Co
             config = ConfigLoader().load(configFilePath)
         } catch (exception: FileNotFoundException) {
             cliOut(exception.message!!)
-            stop()
+            throw exception
+        } catch (applicationException: ApplicationException) {
+            cliOut(applicationException.message)
+            throw applicationException
         }
     }
 
@@ -159,6 +190,7 @@ abstract class ApplicationImpl(configFilePath: String? = null) : Application, Co
         traceCommandsLists.add(newCommandsList)
         currentPath += "/${getCommandsListPath(newCommandsList)}"
 
+        Microtik.info("Transition to a new folder: ${getCommandsListPath(newCommandsList)}")
         return true
     }
 
@@ -176,6 +208,8 @@ abstract class ApplicationImpl(configFilePath: String? = null) : Application, Co
         if (traceCommandsLists.size != 1) {
             currentPath = currentPath.dropLast(getCommandsListPath(getCurrentCommandsList()).length + 1)
             traceCommandsLists.removeLast()
+
+            Microtik.info("Transition back")
         }
     }
 

@@ -1,10 +1,13 @@
 package com.microtik
 
-import com.microtik.core.base.interfaces.Application
+import com.microtik.core.base.ApplicationImpl
+import com.microtik.core.base.logger.Logger
+import com.microtik.core.base.logger.LoggerImpl
 import java.io.File
 
 object Microtik {
-    lateinit var app: Application
+    lateinit var app: ApplicationImpl
+    val logger: Logger = LoggerImpl()
 
     fun getBaseJarDir(): String {
         var str = Microtik::class.java.protectionDomain.codeSource.location.toURI().toString()
@@ -13,5 +16,21 @@ object Microtik {
         str = matchResult!!.value
 
         return File(str).parentFile.toString()
+    }
+
+    fun log(message: String, level: String) {
+        logger.log(message, level)
+    }
+
+    fun alert(message: String) {
+        logger.log(message, "alert")
+    }
+
+    fun info(message: String) {
+        logger.log(message, "info")
+    }
+
+    fun error(message: String) {
+        logger.log(message, "error")
     }
 }

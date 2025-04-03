@@ -4,10 +4,12 @@ import com.google.gson.annotations.SerializedName
 import com.microtik.core.base.config.AbstractConfig
 
 data class LogsConfig(
-    @SerializedName("error")
-    val errorConfig: ErrorLogsConfig = ErrorLogsConfig(),
     @SerializedName("http")
-    val httpLogsConfig: HttpLogsConfig = HttpLogsConfig()
+    val httpLogsConfig: HttpLogsConfig = HttpLogsConfig(),
+    @SerializedName("app")
+    val appLogsConfig: AppLogsConfig = AppLogsConfig(),
+    @SerializedName("alert")
+    val alertLogsConfig: AlertLogsConfig = AlertLogsConfig()
 ) : AbstractConfig() {
 
     override fun toString(): String {
