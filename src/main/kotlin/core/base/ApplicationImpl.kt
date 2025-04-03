@@ -34,40 +34,42 @@ abstract class ApplicationImpl(configFilePath: String? = null) : Application, Co
     private lateinit var currentPath: String
 
     init {
-        try {
-            loadConfig(configFilePath)
-            initLogger(config)
-            currentPath = getCommandsListPath(getCurrentCommandsList())
-        } catch (e: Exception) {
-            System.exit(1)
-        }
+        loadConfig(configFilePath)
+        initLogger(config)
+        currentPath = getCommandsListPath(getCurrentCommandsList())
+
     }
 
     private fun initLogger(config: Config) {
         val dispatcher: Dispatcher = DispatcherImpl()
-        dispatcher.registerTarget(
-            FileTarget(
-                config.logsConfig.appLogsConfig.filename,
-                config.logsConfig.appLogsConfig.path,
-                listOf("info", "alert", "http")
+        try {
+            dispatcher.registerTarget(
+                FileTarget(
+                    config.logsConfig.appLogsConfig.filename,
+                    config.logsConfig.appLogsConfig.path,
+                    listOf("info", "alert", "http")
+                )
             )
-        )
-        dispatcher.registerTarget(
-            FileTarget(
-                config.logsConfig.alertLogsConfig.filename,
-                config.logsConfig.alertLogsConfig.path,
-                listOf("alert")
+            dispatcher.registerTarget(
+                FileTarget(
+                    config.logsConfig.alertLogsConfig.filename,
+                    config.logsConfig.alertLogsConfig.path,
+                    listOf("alert")
+                )
             )
-        )
-        dispatcher.registerTarget(
-            FileTarget(
-                config.logsConfig.httpLogsConfig.filename,
-                config.logsConfig.httpLogsConfig.path,
-                listOf("http")
+            dispatcher.registerTarget(
+                FileTarget(
+                    config.logsConfig.httpLogsConfig.filename,
+                    config.logsConfig.httpLogsConfig.path,
+                    listOf("http")
+                )
             )
-        )
 
-        dispatcher.setLogger(Microtik.logger)
+            dispatcher.setLogger(Microtik.logger)
+        } catch (e: Exception) {
+            cliOut(e.message ?: "Unknown error")
+            System.exit(1)
+        }
     }
 
     /**
@@ -110,10 +112,10 @@ abstract class ApplicationImpl(configFilePath: String? = null) : Application, Co
             config = ConfigLoader().load(configFilePath)
         } catch (exception: FileNotFoundException) {
             cliOut(exception.message!!)
-            throw exception
+            System.exit(1)
         } catch (applicationException: ApplicationException) {
             cliOut(applicationException.message)
-            throw applicationException
+            System.exit(1)
         }
     }
 

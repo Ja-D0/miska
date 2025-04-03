@@ -66,7 +66,7 @@ class MicrotikApiService private constructor() {
             }
 
         if (Microtik.app.getConfig().logsConfig.httpLogsConfig.path.isNotBlank()) {
-            builder.addInterceptor(HttpLoggingInterceptor.Logger { message -> Microtik.http(message) }).apply {
+            builder.addInterceptor(HttpLoggingInterceptor { message -> Microtik.http(message) }.apply {
                 level = HttpLoggingInterceptor.Level.BODY
             })
         }
