@@ -7,7 +7,6 @@ import com.microtik.core.api.endpoints.AddressListsApi
 import com.microtik.core.api.endpoints.FirewallFilterApi
 import com.microtik.core.api.exceptions.FailedRequestException
 import com.microtik.core.api.responseModels.ErrorResponse
-import com.microtik.core.base.HttpFileLogger
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Response
@@ -67,7 +66,7 @@ class MicrotikApiService private constructor() {
             }
 
         if (Microtik.app.getConfig().logsConfig.httpLogsConfig.path.isNotBlank()) {
-            builder.addInterceptor(HttpLoggingInterceptor(HttpFileLogger()).apply {
+            builder.addInterceptor(HttpLoggingInterceptor.Logger { message -> Microtik.http(message) }).apply {
                 level = HttpLoggingInterceptor.Level.BODY
             })
         }

@@ -22,6 +22,10 @@ object Microtik {
         logger.log(message, level)
     }
 
+    fun http(message: String) {
+        logger.log(message, "http")
+    }
+
     fun alert(message: String) {
         logger.log(message, "alert")
     }

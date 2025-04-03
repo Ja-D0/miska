@@ -13,6 +13,9 @@ import kotlin.reflect.full.findAnnotation
  */
 class InlineCommandsList : CommandsListImpl() {
 
+    @Command("exit", CommandType.COMMAND, "")
+    fun commandExit() = Microtik.app.stop()
+
     /**
      *
      */

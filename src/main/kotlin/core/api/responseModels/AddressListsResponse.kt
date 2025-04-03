@@ -4,17 +4,17 @@ import com.google.gson.annotations.SerializedName
 
 data class AddressListsResponse(
     @SerializedName(".id")
-    val id: String,
+    val id: String? = null,
     @SerializedName("address")
-    val address: String,
+    val address: String? = null,
     @SerializedName("creation-time")
-    val creationTime: String,
+    val creationTime: String? = null,
     @SerializedName("disabled")
-    val disabled: Boolean,
+    val disabled: Boolean? = null,
     @SerializedName("dynamic")
-    val dynamic: Boolean,
+    val dynamic: Boolean? = null,
     @SerializedName("list")
-    val list: String,
+    val list: String? = null,
     @SerializedName("timeout")
     val timeout: String? = null,
 ) : Response {

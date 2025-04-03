@@ -1,5 +1,6 @@
 package com.microtik.core.base.cli
 
+import com.microtik.Microtik
 import com.microtik.core.base.cli.annotations.CommandOption
 import com.microtik.core.base.cli.exceptions.CommandOptionAnnotationNotFoundException
 import com.microtik.core.base.cli.exceptions.ConvertParameterException
@@ -44,6 +45,8 @@ abstract class CommandImpl(
         val args = bindCommandOptions(extractOptions(), options)
 
         return try {
+            Microtik.info("Run command $id")
+
             command.callBy(args)
         } catch (invocationTargetException: InvocationTargetException) {
             throw invocationTargetException.cause!!
@@ -198,7 +201,7 @@ abstract class CommandImpl(
     private fun listOptionsAsOptions(listOptions: List<KParameter>): Options {
         val options = Options()
 
-        listOptions.drop(1).forEach { parameter ->
+        listOptions.forEach { parameter ->
             val annotation = parameter.findAnnotation<CommandOption>()
             if (annotation != null) {
                 val option = Option(annotation.shortName, annotation.longName, true, annotation.description)

@@ -49,7 +49,7 @@ abstract class ApplicationImpl(configFilePath: String? = null) : Application, Co
             FileTarget(
                 config.logsConfig.appLogsConfig.filename,
                 config.logsConfig.appLogsConfig.path,
-                listOf("info", "alert")
+                listOf("info", "alert", "http")
             )
         )
         dispatcher.registerTarget(
@@ -57,6 +57,13 @@ abstract class ApplicationImpl(configFilePath: String? = null) : Application, Co
                 config.logsConfig.alertLogsConfig.filename,
                 config.logsConfig.alertLogsConfig.path,
                 listOf("alert")
+            )
+        )
+        dispatcher.registerTarget(
+            FileTarget(
+                config.logsConfig.httpLogsConfig.filename,
+                config.logsConfig.httpLogsConfig.path,
+                listOf("http")
             )
         )
 
