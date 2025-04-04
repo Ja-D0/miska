@@ -1,7 +1,7 @@
-package com.microtik.core.base
+package com.miska.core.base
 
-import com.microtik.core.base.cli.interfaces.Request
-import com.microtik.core.base.cli.interfaces.Response
+import com.miska.core.base.cli.interfaces.Request
+import com.miska.core.base.cli.interfaces.Response
 
 /**
  *

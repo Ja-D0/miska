@@ -1,23 +1,23 @@
-package com.microtik.core.base
+package com.miska.core.base
 
-import com.microtik.Microtik
-import com.microtik.core.base.cli.CommandsListImpl
-import com.microtik.core.base.cli.InlineCommandsList
-import com.microtik.core.base.cli.Request
-import com.microtik.core.base.cli.annotations.CommandList
-import com.microtik.core.base.cli.exceptions.AnnotationNotFoundException
-import com.microtik.core.base.cli.exceptions.ApplicationException
-import com.microtik.core.base.cli.exceptions.CommandsListNotFoundException
-import com.microtik.core.base.cli.interfaces.CommandsList
-import com.microtik.core.base.cli.interfaces.Response
-import com.microtik.core.base.interfaces.Application
-import com.microtik.core.base.interfaces.Configurable
-import com.microtik.core.base.logger.DispatcherImpl
-import com.microtik.core.base.logger.FileTarget
-import com.microtik.core.commandLists.RootCommandsList
+import com.miska.Miska
+import com.miska.core.base.cli.CommandsListImpl
+import com.miska.core.base.cli.InlineCommandsList
+import com.miska.core.base.cli.Request
+import com.miska.core.base.cli.annotations.CommandList
+import com.miska.core.base.cli.exceptions.AnnotationNotFoundException
+import com.miska.core.base.cli.exceptions.ApplicationException
+import com.miska.core.base.cli.exceptions.CommandsListNotFoundException
+import com.miska.core.base.cli.interfaces.CommandsList
+import com.miska.core.base.cli.interfaces.Response
+import com.miska.core.base.interfaces.Application
+import com.miska.core.base.interfaces.Configurable
+import com.miska.core.base.logger.DispatcherImpl
+import com.miska.core.base.logger.FileTarget
+import com.miska.core.commandLists.RootCommandsList
 import java.io.FileNotFoundException
 import kotlin.reflect.full.findAnnotation
-import com.microtik.core.base.cli.Response as ResponseImpl
+import com.miska.core.base.cli.Response as ResponseImpl
 
 /**
  * Класс, содержащий базовую реализацию приложения
@@ -67,7 +67,7 @@ abstract class ApplicationImpl(configFilePath: String? = null) : Application, Co
                 }
 
                 setLogger {
-                    Microtik.logger
+                    Miska.logger
                 }
             }
         } catch (e: Exception) {
@@ -203,7 +203,7 @@ abstract class ApplicationImpl(configFilePath: String? = null) : Application, Co
         traceCommandsLists.add(newCommandsList)
         currentPath += "/${getCommandsListPath(newCommandsList)}"
 
-        Microtik.info("Transition to a new folder: ${getCommandsListPath(newCommandsList)}")
+        Miska.info("Transition to a new folder: ${getCommandsListPath(newCommandsList)}")
         return true
     }
 
@@ -222,7 +222,7 @@ abstract class ApplicationImpl(configFilePath: String? = null) : Application, Co
             currentPath = currentPath.dropLast(getCommandsListPath(getCurrentCommandsList()).length + 1)
             traceCommandsLists.removeLast()
 
-            Microtik.info("Transition back")
+            Miska.info("Transition back")
         }
     }
 
@@ -258,7 +258,7 @@ abstract class ApplicationImpl(configFilePath: String? = null) : Application, Co
      */
     override fun start() {
         isRunning = true
-        Microtik.app = this
+        Miska.app = this
     }
 
     /**

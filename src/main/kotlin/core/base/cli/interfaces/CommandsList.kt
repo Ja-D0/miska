@@ -1,4 +1,4 @@
-package com.microtik.core.base.cli.interfaces
+package com.miska.core.base.cli.interfaces
 
 import kotlin.reflect.KParameter
 

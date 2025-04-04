@@ -5,10 +5,10 @@ plugins {
     id("io.spring.dependency-management") version "1.1.7"
 }
 
-val microtikEnvIsDev: String by project
+val miskaEnvIsDev: String by project
 
-group = "com.microtik"
-version = "0.0.1-${if (microtikEnvIsDev.toBoolean()) "debug" else ""}"
+group = "com.miska"
+version = "0.0.1-${if (miskaEnvIsDev.toBoolean()) "debug" else ""}"
 
 repositories {
     mavenCentral()
@@ -16,7 +16,7 @@ repositories {
 
 tasks.jar {
     manifest {
-        attributes["Main-Class"] = "com.microtik.MainKt"
+        attributes["Main-Class"] = "com.miska.MainKt"
     }
     configurations["compileClasspath"].forEach { file: File ->
         from(zipTree(file.absoluteFile))
@@ -24,7 +24,7 @@ tasks.jar {
     duplicatesStrategy = DuplicatesStrategy.INCLUDE
 
     doFirst {
-        System.setProperty("APP_ENV_DEV", microtikEnvIsDev)
+        System.setProperty("APP_ENV_DEV", miskaEnvIsDev)
     }
 }
 

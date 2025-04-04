@@ -1,4 +1,4 @@
-package com.microtik.core.base.cli.annotations
+package com.miska.core.base.cli.annotations
 
 /**
  * Общий набор перечислений, позволяющий определить для чего предназначена команда

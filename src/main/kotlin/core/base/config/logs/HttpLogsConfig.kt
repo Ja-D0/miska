@@ -1,7 +1,7 @@
-package com.microtik.core.base.config.logs
+package com.miska.core.base.config.logs
 
 import com.google.gson.annotations.SerializedName
-import com.microtik.core.base.config.AbstractConfig
+import com.miska.core.base.config.AbstractConfig
 
 data class HttpLogsConfig(
     @SerializedName("path")

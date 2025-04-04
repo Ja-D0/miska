@@ -1,22 +1,22 @@
-package com.microtik.core.commandLists
+package com.miska.core.commandLists
 
-import com.microtik.Microtik
-import com.microtik.core.api.MicrotikApiService
-import com.microtik.core.api.requestModels.AddressListPayload
-import com.microtik.core.api.responseModels.AddressListsResponse
-import com.microtik.core.base.cli.CommandsListImpl
-import com.microtik.core.base.cli.annotations.Command
-import com.microtik.core.base.cli.annotations.CommandList
-import com.microtik.core.base.cli.annotations.CommandOption
-import com.microtik.core.base.cli.annotations.CommandType
+import com.miska.Miska
+import com.miska.core.api.MikrotikApiService
+import com.miska.core.api.requestModels.AddressListPayload
+import com.miska.core.api.responseModels.AddressListsResponse
+import com.miska.core.base.cli.CommandsListImpl
+import com.miska.core.base.cli.annotations.Command
+import com.miska.core.base.cli.annotations.CommandList
+import com.miska.core.base.cli.annotations.CommandOption
+import com.miska.core.base.cli.annotations.CommandType
 import java.io.File
 
 @CommandList("address-list")
 class AddressListsCommandsList : CommandsListImpl() {
     @Command("print", CommandType.COMMAND, "Show the elements")
     fun commandPrint(): String =
-        MicrotikApiService.runRequest<ArrayList<AddressListsResponse>> {
-            MicrotikApiService.getInstance().getAddressListsApi().print().execute()
+        MikrotikApiService.runRequest<ArrayList<AddressListsResponse>> {
+            MikrotikApiService.getInstance().getAddressListsApi().print().execute()
         }.joinToString("\n") { it.toString() }
 
 
@@ -29,8 +29,8 @@ class AddressListsCommandsList : CommandsListImpl() {
         @CommandOption("t", "timeout", false, "Timeout")
         timeout: String? = null
     ): String =
-        MicrotikApiService.runRequest {
-            MicrotikApiService.getInstance().getAddressListsApi().add(AddressListPayload(list, address, timeout))
+        MikrotikApiService.runRequest {
+            MikrotikApiService.getInstance().getAddressListsApi().add(AddressListPayload(list, address, timeout))
                 .execute()
         }.toString()
 
@@ -45,8 +45,8 @@ class AddressListsCommandsList : CommandsListImpl() {
         @CommandOption("t", "timeout", false, "Timeout")
         timeout: String? = null
     ): String =
-        MicrotikApiService.runRequest {
-            MicrotikApiService.getInstance().getAddressListsApi().edit(id, AddressListPayload(list, address, timeout))
+        MikrotikApiService.runRequest {
+            MikrotikApiService.getInstance().getAddressListsApi().edit(id, AddressListPayload(list, address, timeout))
                 .execute()
         }.toString()
 
@@ -55,8 +55,8 @@ class AddressListsCommandsList : CommandsListImpl() {
         @CommandOption("i", "id", true, "ID Rules")
         id: String
     ): String =
-        MicrotikApiService.runRequest {
-            MicrotikApiService.getInstance().getAddressListsApi().edit(id, AddressListPayload(disabled = true))
+        MikrotikApiService.runRequest {
+            MikrotikApiService.getInstance().getAddressListsApi().edit(id, AddressListPayload(disabled = true))
                 .execute()
         }.toString()
 
@@ -65,8 +65,8 @@ class AddressListsCommandsList : CommandsListImpl() {
         @CommandOption("i", "id", true, "ID Rules")
         id: String
     ): String =
-        MicrotikApiService.runRequest<AddressListsResponse> {
-            MicrotikApiService.getInstance().getAddressListsApi().edit(id, AddressListPayload(disabled = false))
+        MikrotikApiService.runRequest<AddressListsResponse> {
+            MikrotikApiService.getInstance().getAddressListsApi().edit(id, AddressListPayload(disabled = false))
                 .execute()
         }.toString()
 
@@ -75,8 +75,8 @@ class AddressListsCommandsList : CommandsListImpl() {
         @CommandOption("i", "id", true, "Record number")
         id: String
     ): Unit =
-        MicrotikApiService.runRequest<Unit> {
-            MicrotikApiService.getInstance().getAddressListsApi().remove(id).execute()
+        MikrotikApiService.runRequest<Unit> {
+            MikrotikApiService.getInstance().getAddressListsApi().remove(id).execute()
         }
 
     @Command("load-from-file", CommandType.COMMAND, "Load IP from file")
@@ -87,32 +87,32 @@ class AddressListsCommandsList : CommandsListImpl() {
         list: String
     ): String {
         val addressLists =
-            MicrotikApiService.runRequest {
-                MicrotikApiService.getInstance().getAddressListsApi().print(list).execute()
+            MikrotikApiService.runRequest {
+                MikrotikApiService.getInstance().getAddressListsApi().print(list).execute()
             }
 
         if (addressLists!!.isEmpty()) {
-            Microtik.app.cliOut("The list \"$list\" does not exist; it will be created automatically")
+            Miska.app.cliOut("The list \"$list\" does not exist; it will be created automatically")
         }
 
         val regStr = "^([0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3})(\\/(3[0-2]|[12]?[0-9]))?\$"
         val ipRegex = Regex(regStr)
         var lineIndex = 1
 
-        File(Microtik.getBaseJarDir() + File.separator + "configs" + File.separator + "ip" + File.separator + fileName).forEachLine { address ->
+        File(Miska.getBaseJarDir() + File.separator + "configs" + File.separator + "ip" + File.separator + fileName).forEachLine { address ->
             if (ipRegex.matches(address)) {
-                val addressList = MicrotikApiService.runRequest {
-                    MicrotikApiService.getInstance().getAddressListsApi().add(AddressListPayload(list, address))
+                val addressList = MikrotikApiService.runRequest {
+                    MikrotikApiService.getInstance().getAddressListsApi().add(AddressListPayload(list, address))
                         .execute()
                 }
 
                 if (addressList != null) {
-                    Microtik.app.cliOut("IP address ${addressList.address} added to the list \"${addressList.list}\"")
+                    Miska.app.cliOut("IP address ${addressList.address} added to the list \"${addressList.list}\"")
                 } else {
-                    Microtik.app.cliOut("Error adding IP address $address to the list $list")
+                    Miska.app.cliOut("Error adding IP address $address to the list $list")
                 }
             } else {
-                Microtik.app.cliOut("IP address $address is not valid on line $lineIndex. Skipping.")
+                Miska.app.cliOut("IP address $address is not valid on line $lineIndex. Skipping.")
             }
 
             lineIndex++

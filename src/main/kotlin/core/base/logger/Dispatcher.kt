@@ -1,4 +1,4 @@
-package com.microtik.core.base.logger
+package com.miska.core.base.logger
 
 interface Dispatcher {
     fun dispatch(message: Message)

@@ -1,12 +1,12 @@
-package com.microtik.core.api
+package com.miska.core.api
 
 import com.google.gson.Gson
-import com.microtik.Microtik
-import com.microtik.core.api.endpoints.AddressApi
-import com.microtik.core.api.endpoints.AddressListsApi
-import com.microtik.core.api.endpoints.FirewallFilterApi
-import com.microtik.core.api.exceptions.FailedRequestException
-import com.microtik.core.api.responseModels.ErrorResponse
+import com.miska.Miska
+import com.miska.core.api.endpoints.AddressApi
+import com.miska.core.api.endpoints.AddressListsApi
+import com.miska.core.api.endpoints.FirewallFilterApi
+import com.miska.core.api.exceptions.FailedRequestException
+import com.miska.core.api.responseModels.ErrorResponse
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Response
@@ -16,14 +16,14 @@ import java.net.ConnectException
 import java.util.*
 import java.util.concurrent.TimeUnit
 
-class MicrotikApiService private constructor() {
+class MikrotikApiService private constructor() {
     companion object {
-        private var instance: MicrotikApiService? = null
+        private var instance: MikrotikApiService? = null
         private lateinit var retrofit: Retrofit
 
-        fun getInstance(): MicrotikApiService {
+        fun getInstance(): MikrotikApiService {
             if (instance == null) {
-                instance = MicrotikApiService()
+                instance = MikrotikApiService()
             }
 
             return instance!!
@@ -65,8 +65,8 @@ class MicrotikApiService private constructor() {
                 chain.proceed(chain.request().newBuilder().header("Authorization", getBasicCredentials()).build())
             }
 
-        if (Microtik.app.getConfig().logsConfig.httpLogsConfig.path.isNotBlank()) {
-            builder.addInterceptor(HttpLoggingInterceptor { message -> Microtik.http(message) }.apply {
+        if (Miska.app.getConfig().logsConfig.httpLogsConfig.path.isNotBlank()) {
+            builder.addInterceptor(HttpLoggingInterceptor { message -> Miska.http(message) }.apply {
                 level = HttpLoggingInterceptor.Level.BODY
             })
         }
@@ -74,15 +74,15 @@ class MicrotikApiService private constructor() {
         val client = builder.build()
 
         retrofit = Retrofit.Builder()
-            .baseUrl("http://" + Microtik.app.getConfig().microtikApiConfig.microtikServerConfig.host + "/rest/")
+            .baseUrl("http://" + Miska.app.getConfig().mikrotikApiConfig.mikrotikServerConfig.host + "/rest/")
             .addConverterFactory(GsonConverterFactory.create())
             .client(client)
             .build()
     }
 
     private fun getBasicCredentials(): String {
-        val login = Microtik.app.getConfig().microtikApiConfig.microtikServerConfig.login
-        val password = Microtik.app.getConfig().microtikApiConfig.microtikServerConfig.password
+        val login = Miska.app.getConfig().mikrotikApiConfig.mikrotikServerConfig.login
+        val password = Miska.app.getConfig().mikrotikApiConfig.mikrotikServerConfig.password
 
         return "Basic " + Base64.getEncoder().encodeToString("$login:$password".encodeToByteArray())
     }

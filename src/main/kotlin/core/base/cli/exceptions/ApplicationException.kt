@@ -1,4 +1,4 @@
-package com.microtik.core.base.cli.exceptions
+package com.miska.core.base.cli.exceptions
 
 /**
  * Основной класс исключения, от которого наследуются все исключения приложения

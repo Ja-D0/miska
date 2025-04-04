@@ -1,4 +1,4 @@
-package com.microtik.core.base.interfaces
+package com.miska.core.base.interfaces
 
 /**
  * Интерфейс предоставляет объекту возможность загружать конфигурационный файл

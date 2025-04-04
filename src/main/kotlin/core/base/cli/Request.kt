@@ -1,7 +1,7 @@
-package com.microtik.core.base.cli
+package com.miska.core.base.cli
 
-import com.microtik.Microtik
-import com.microtik.core.base.cli.interfaces.Request
+import com.miska.Miska
+import com.miska.core.base.cli.interfaces.Request
 
 /**
  * Класс, реализующий запрос на выполнение команды
@@ -45,7 +45,7 @@ class Request : Request {
         var line: String?
 
         do {
-            line = Microtik.app.cliIn()
+            line = Miska.app.cliIn()
         } while (line.isNullOrBlank())
 
         line.trim()

@@ -1,6 +1,6 @@
-package com.microtik.core.base.logger
+package com.miska.core.base.logger
 
-import com.microtik.Microtik
+import com.miska.Miska
 
 class DispatcherImpl : Dispatcher {
     private var logger: Logger? = null
@@ -17,7 +17,7 @@ class DispatcherImpl : Dispatcher {
         logger!!.setDispatcher(this)
     }
 
-    override fun getLogger(): Logger = logger ?: Microtik.logger
+    override fun getLogger(): Logger = logger ?: Miska.logger
 
     override fun registerTarget(block: () -> Target) {
         targets.add(block())

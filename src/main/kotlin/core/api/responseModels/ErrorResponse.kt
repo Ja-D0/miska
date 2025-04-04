@@ -1,4 +1,4 @@
-package com.microtik.core.api.responseModels
+package com.miska.core.api.responseModels
 
 data class ErrorResponse(
     val error: Int,

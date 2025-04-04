@@ -1,4 +1,4 @@
-package com.microtik.core.base.config
+package com.miska.core.base.config
 
 /**
  * Класс загружающий конфигурацию приложения

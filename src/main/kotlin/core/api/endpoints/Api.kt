@@ -1,3 +1,3 @@
-package com.microtik.core.api.endpoints
+package com.miska.core.api.endpoints
 
 interface Api

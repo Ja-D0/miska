@@ -1,6 +1,6 @@
-package com.microtik.core.api.exceptions
+package com.miska.core.api.exceptions
 
-import com.microtik.core.base.cli.exceptions.ApplicationException
+import com.miska.core.base.cli.exceptions.ApplicationException
 
 class FailedRequestException(
     val statusCode: Int,

@@ -1,14 +1,9 @@
-package com.microtik.core.api.endpoints
+package com.miska.core.api.endpoints
 
-import com.microtik.core.api.requestModels.AddressPayload
-import com.microtik.core.api.responseModels.AddressResponse
+import com.miska.core.api.requestModels.AddressPayload
+import com.miska.core.api.responseModels.AddressResponse
 import retrofit2.Call
-import retrofit2.http.Body
-import retrofit2.http.DELETE
-import retrofit2.http.GET
-import retrofit2.http.PATCH
-import retrofit2.http.PUT
-import retrofit2.http.Path
+import retrofit2.http.*
 
 interface AddressApi : Api {
     @GET("ip/address")

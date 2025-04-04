@@ -1,7 +1,7 @@
-package com.microtik.core.base.cli
+package com.miska.core.base.cli
 
-import com.microtik.Microtik
-import com.microtik.core.base.cli.interfaces.Response
+import com.miska.Miska
+import com.miska.core.base.cli.interfaces.Response
 
 /**
  * Класс, реализующий ответ на запрос выполнения команды
@@ -28,7 +28,7 @@ class Response : Response {
      */
     override fun send() {
         if (data != null) {
-            Microtik.app.cliOut(data!!)
+            Miska.app.cliOut(data!!)
         }
     }
 }

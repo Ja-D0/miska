@@ -1,4 +1,4 @@
-package com.microtik.core.api.requestModels
+package com.miska.core.api.requestModels
 
 import com.google.gson.annotations.SerializedName
 

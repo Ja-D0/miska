@@ -1,7 +1,7 @@
-package com.microtik.core.base.logger
+package com.miska.core.base.logger
 
-import com.microtik.Microtik
-import com.microtik.core.base.cli.exceptions.ApplicationException
+import com.miska.Miska
+import com.miska.core.base.cli.exceptions.ApplicationException
 import java.io.File
 import java.io.FileWriter
 import java.io.IOException
@@ -10,7 +10,7 @@ class FileTarget(val logFileName: String, val logFilePath: String, val levels: L
     private var file: File
 
     init {
-        val baseDir = Microtik.getBaseJarDir()
+        val baseDir = Miska.getBaseJarDir()
 
         val file = File(baseDir + File.separator + logFilePath + logFileName)
 
@@ -47,7 +47,7 @@ class FileTarget(val logFileName: String, val logFilePath: String, val levels: L
             val logEntry = "[${message.time}][${message.level.uppercase()}] ${message.message}\n"
             FileWriter(file, true).use { writer -> writer.write(logEntry) }
         } catch (e: IOException) {
-            Microtik.error("There was an error when writing to a file ${file.absoluteFile}")
+            Miska.error("There was an error when writing to a file ${file.absoluteFile}")
         }
     }
 }

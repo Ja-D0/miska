@@ -1,8 +1,8 @@
-package com.microtik.core.base.config.microtik
+package com.miska.core.base.config.mikrotik
 
-import com.microtik.core.base.config.AbstractConfig
+import com.miska.core.base.config.AbstractConfig
 
-data class MicrotikServerConfig(
+data class MikrotikServerConfig(
     val host: String = "localhost",
     val port: Int = 80,
     val login: String = "admin",

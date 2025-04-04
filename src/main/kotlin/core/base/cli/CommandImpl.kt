@@ -1,11 +1,11 @@
-package com.microtik.core.base.cli
+package com.miska.core.base.cli
 
-import com.microtik.Microtik
-import com.microtik.core.base.cli.annotations.CommandOption
-import com.microtik.core.base.cli.exceptions.CommandOptionAnnotationNotFoundException
-import com.microtik.core.base.cli.exceptions.ConvertParameterException
-import com.microtik.core.base.cli.exceptions.ValidationErrorException
-import com.microtik.core.base.cli.interfaces.Command
+import com.miska.Miska
+import com.miska.core.base.cli.annotations.CommandOption
+import com.miska.core.base.cli.exceptions.CommandOptionAnnotationNotFoundException
+import com.miska.core.base.cli.exceptions.ConvertParameterException
+import com.miska.core.base.cli.exceptions.ValidationErrorException
+import com.miska.core.base.cli.interfaces.Command
 import org.apache.commons.cli.*
 import java.lang.reflect.InvocationTargetException
 import kotlin.reflect.KFunction
@@ -45,7 +45,7 @@ abstract class CommandImpl(
         val args = bindCommandOptions(extractOptions(), options)
 
         return try {
-            Microtik.info("Run command $id")
+            Miska.info("Run command $id")
 
             command.callBy(args)
         } catch (invocationTargetException: InvocationTargetException) {

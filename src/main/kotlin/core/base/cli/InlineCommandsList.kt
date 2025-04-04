@@ -1,9 +1,9 @@
-package com.microtik.core.base.cli
+package com.miska.core.base.cli
 
-import com.microtik.Microtik
-import com.microtik.core.base.cli.annotations.Command
-import com.microtik.core.base.cli.annotations.CommandOption
-import com.microtik.core.base.cli.annotations.CommandType
+import com.miska.Miska
+import com.miska.core.base.cli.annotations.Command
+import com.miska.core.base.cli.annotations.CommandOption
+import com.miska.core.base.cli.annotations.CommandType
 import org.apache.commons.cli.HelpFormatter
 import kotlin.reflect.full.declaredFunctions
 import kotlin.reflect.full.findAnnotation
@@ -14,7 +14,7 @@ import kotlin.reflect.full.findAnnotation
 class InlineCommandsList : CommandsListImpl() {
 
     @Command("exit", CommandType.COMMAND, "")
-    fun commandExit() = Microtik.app.stop()
+    fun commandExit() = Miska.app.stop()
 
     /**
      *
@@ -23,7 +23,7 @@ class InlineCommandsList : CommandsListImpl() {
     fun commandLs() {
         val result: StringBuilder = StringBuilder()
 
-        Microtik.app.getCurrentCommandsList()::class.declaredFunctions
+        Miska.app.getCurrentCommandsList()::class.declaredFunctions
             .sortedWith(compareBy(
                 { it.findAnnotation<Command>()?.commandType != CommandType.PATH },
                 { it.name }
@@ -31,7 +31,7 @@ class InlineCommandsList : CommandsListImpl() {
                 result.append(member.findAnnotation<Command>()?.id + "   ")
             }
 
-        return Microtik.app.cliOut(result.toString())
+        return Miska.app.cliOut(result.toString())
     }
 
     /**
@@ -39,7 +39,7 @@ class InlineCommandsList : CommandsListImpl() {
      */
     @Command("..", CommandType.COMMAND, "")
     fun commandBack() {
-        Microtik.app.goBack()
+        Miska.app.goBack()
     }
 
     /**
@@ -50,7 +50,7 @@ class InlineCommandsList : CommandsListImpl() {
         @CommandOption("i", "id", true, "")
         commandId: String
     ) {
-        val command = Microtik.app.getCurrentCommandsList().createCommand(commandId)
+        val command = Miska.app.getCurrentCommandsList().createCommand(commandId)
 
         val formatter = HelpFormatter()
         formatter.printHelp(command.id, command.extractOptionsAsOptions())

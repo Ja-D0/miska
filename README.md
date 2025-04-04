@@ -1,4 +1,3 @@
-
-# Microtik CLI API
+# Miska CLI API
 
 Дипломный проект по реализации ПО для взаимодействия с RouterOS 7.15

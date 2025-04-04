@@ -1,19 +1,19 @@
-package com.microtik.core.commandLists
+package com.miska.core.commandLists
 
-import com.microtik.core.api.MicrotikApiService
-import com.microtik.core.api.requestModels.FirewallFilterPayload
-import com.microtik.core.base.cli.CommandsListImpl
-import com.microtik.core.base.cli.annotations.Command
-import com.microtik.core.base.cli.annotations.CommandList
-import com.microtik.core.base.cli.annotations.CommandOption
-import com.microtik.core.base.cli.annotations.CommandType
+import com.miska.core.api.MikrotikApiService
+import com.miska.core.api.requestModels.FirewallFilterPayload
+import com.miska.core.base.cli.CommandsListImpl
+import com.miska.core.base.cli.annotations.Command
+import com.miska.core.base.cli.annotations.CommandList
+import com.miska.core.base.cli.annotations.CommandOption
+import com.miska.core.base.cli.annotations.CommandType
 
 @CommandList("filter")
 class FilterCommandsList : CommandsListImpl() {
     @Command("print", CommandType.COMMAND, "Show the elements")
     fun commandPrint(): String =
-        MicrotikApiService.runRequest {
-            MicrotikApiService.getInstance().getFirewallFilterApi().print().execute()
+        MikrotikApiService.runRequest {
+            MikrotikApiService.getInstance().getFirewallFilterApi().print().execute()
         }.joinToString("\n") { it.toString() }
 
     @Command("add", CommandType.COMMAND, "Create a rule")
@@ -51,8 +51,8 @@ class FilterCommandsList : CommandsListImpl() {
         @CommandOption("lp", "log-prefix", false, "Log prefix")
         logPrefix: String? = null,
     ): String =
-        MicrotikApiService.runRequest {
-            MicrotikApiService.getInstance().getFirewallFilterApi().add(
+        MikrotikApiService.runRequest {
+            MikrotikApiService.getInstance().getFirewallFilterApi().add(
                 FirewallFilterPayload(
                     action,
                     chain,
@@ -111,8 +111,8 @@ class FilterCommandsList : CommandsListImpl() {
         @CommandOption("lp", "log-prefix", false, "Log prefix")
         logPrefix: String? = null,
     ): String =
-        MicrotikApiService.runRequest {
-            MicrotikApiService.getInstance().getFirewallFilterApi().edit(
+        MikrotikApiService.runRequest {
+            MikrotikApiService.getInstance().getFirewallFilterApi().edit(
                 id, FirewallFilterPayload(
                     action,
                     chain,
@@ -139,8 +139,8 @@ class FilterCommandsList : CommandsListImpl() {
         @CommandOption("i", "id", true, "ID Rules")
         id: String
     ): String =
-        MicrotikApiService.runRequest {
-            MicrotikApiService.getInstance().getFirewallFilterApi().edit(id, FirewallFilterPayload(disabled = true))
+        MikrotikApiService.runRequest {
+            MikrotikApiService.getInstance().getFirewallFilterApi().edit(id, FirewallFilterPayload(disabled = true))
                 .execute()
         }.toString()
 
@@ -149,8 +149,8 @@ class FilterCommandsList : CommandsListImpl() {
         @CommandOption("i", "id", true, "ID Rules")
         id: String
     ): String =
-        MicrotikApiService.runRequest {
-            MicrotikApiService.getInstance().getFirewallFilterApi().edit(id, FirewallFilterPayload(disabled = false))
+        MikrotikApiService.runRequest {
+            MikrotikApiService.getInstance().getFirewallFilterApi().edit(id, FirewallFilterPayload(disabled = false))
                 .execute()
         }.toString()
 
@@ -159,5 +159,5 @@ class FilterCommandsList : CommandsListImpl() {
         @CommandOption("i", "id", true, "Record number")
         id: String
     ): Unit =
-        MicrotikApiService.runRequest { MicrotikApiService.getInstance().getFirewallFilterApi().remove(id).execute() }
+        MikrotikApiService.runRequest { MikrotikApiService.getInstance().getFirewallFilterApi().remove(id).execute() }
 }

@@ -1,3 +1,3 @@
-package com.microtik.core.api.requestModels
+package com.miska.core.api.requestModels
 
 interface Payload

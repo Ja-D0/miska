@@ -1,13 +1,13 @@
-package com.microtik.core.base.cli
+package com.miska.core.base.cli
 
-import com.microtik.Microtik
-import com.microtik.core.base.cli.annotations.Command
-import com.microtik.core.base.cli.annotations.CommandType
-import com.microtik.core.base.cli.exceptions.CommandConflictException
-import com.microtik.core.base.cli.exceptions.NotFoundCommandException
-import com.microtik.core.base.cli.exceptions.PathConflictException
-import com.microtik.core.base.cli.exceptions.ValidationErrorException
-import com.microtik.core.base.cli.interfaces.CommandsList
+import com.miska.Miska
+import com.miska.core.base.cli.annotations.Command
+import com.miska.core.base.cli.annotations.CommandType
+import com.miska.core.base.cli.exceptions.CommandConflictException
+import com.miska.core.base.cli.exceptions.NotFoundCommandException
+import com.miska.core.base.cli.exceptions.PathConflictException
+import com.miska.core.base.cli.exceptions.ValidationErrorException
+import com.miska.core.base.cli.interfaces.CommandsList
 import org.apache.commons.cli.DefaultParser
 import org.apache.commons.cli.Options
 import kotlin.reflect.KFunction
@@ -15,7 +15,7 @@ import kotlin.reflect.KParameter
 import kotlin.reflect.KVisibility
 import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.full.memberFunctions
-import com.microtik.core.base.cli.interfaces.Command as CliCommand
+import com.miska.core.base.cli.interfaces.Command as CliCommand
 
 /**
  * Базовый класс, реализующий поведение списка команд и их запуска
@@ -36,14 +36,14 @@ abstract class CommandsListImpl : CommandsList {
      */
     override fun runCommand(id: String, params: ArrayList<String>): Any? {
         if (isHelpRequest(params)) {
-            return Microtik.app.runCommand("help", arrayListOf("--id", id))
+            return Miska.app.runCommand("help", arrayListOf("--id", id))
         }
 
         return try {
             createCommand(id).runCommand(params)
         } catch (validate: ValidationErrorException) {
-            Microtik.app.cliOut(validate.message)
-            Microtik.app.runCommand("help", arrayListOf("--id", id))
+            Miska.app.cliOut(validate.message)
+            Miska.app.runCommand("help", arrayListOf("--id", id))
         }
     }
 
@@ -59,8 +59,8 @@ abstract class CommandsListImpl : CommandsList {
         return try {
             createCommand(id).runCommand()
         } catch (validate: ValidationErrorException) {
-            Microtik.app.cliOut(validate.message)
-            Microtik.app.runCommand("help", arrayListOf("--id", id))
+            Miska.app.cliOut(validate.message)
+            Miska.app.runCommand("help", arrayListOf("--id", id))
         }
     }
 

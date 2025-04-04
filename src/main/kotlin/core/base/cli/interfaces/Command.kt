@@ -1,6 +1,6 @@
-package com.microtik.core.base.cli.interfaces
+package com.miska.core.base.cli.interfaces
 
-import com.microtik.core.base.cli.annotations.CommandOption
+import com.miska.core.base.cli.annotations.CommandOption
 import org.apache.commons.cli.Options
 import kotlin.reflect.KParameter
 

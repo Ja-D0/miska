@@ -1,4 +1,4 @@
-package com.microtik.core.base.config
+package com.miska.core.base.config
 
 import com.google.gson.annotations.SerializedName
 import kotlin.reflect.full.declaredMemberProperties

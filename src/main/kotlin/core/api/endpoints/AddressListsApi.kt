@@ -1,7 +1,7 @@
-package com.microtik.core.api.endpoints
+package com.miska.core.api.endpoints
 
-import com.microtik.core.api.requestModels.AddressListPayload
-import com.microtik.core.api.responseModels.AddressListsResponse
+import com.miska.core.api.requestModels.AddressListPayload
+import com.miska.core.api.responseModels.AddressListsResponse
 import retrofit2.Call
 import retrofit2.http.*
 

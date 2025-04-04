@@ -1,4 +1,4 @@
-package com.microtik.core.base.cli.exceptions
+package com.miska.core.base.cli.exceptions
 
 /**
  * Исключение возникающее при невозможности определить наименование текущий каталога пользователя

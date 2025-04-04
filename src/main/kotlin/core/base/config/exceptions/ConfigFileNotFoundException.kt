@@ -1,4 +1,4 @@
-package com.microtik.core.base.config.exceptions
+package com.miska.core.base.config.exceptions
 
 import java.io.FileNotFoundException
 

@@ -1,13 +1,13 @@
-package com.microtik.core.commandLists
+package com.miska.core.commandLists
 
-import com.microtik.core.api.MicrotikApiService
-import com.microtik.core.api.requestModels.AddressPayload
-import com.microtik.core.api.responseModels.AddressResponse
-import com.microtik.core.base.cli.CommandsListImpl
-import com.microtik.core.base.cli.annotations.Command
-import com.microtik.core.base.cli.annotations.CommandList
-import com.microtik.core.base.cli.annotations.CommandOption
-import com.microtik.core.base.cli.annotations.CommandType
+import com.miska.core.api.MikrotikApiService
+import com.miska.core.api.requestModels.AddressPayload
+import com.miska.core.api.responseModels.AddressResponse
+import com.miska.core.base.cli.CommandsListImpl
+import com.miska.core.base.cli.annotations.Command
+import com.miska.core.base.cli.annotations.CommandList
+import com.miska.core.base.cli.annotations.CommandOption
+import com.miska.core.base.cli.annotations.CommandType
 
 /**
  *
@@ -17,8 +17,8 @@ class AddressCommandsList : CommandsListImpl() {
 
     @Command("print", CommandType.COMMAND, "Show the elements")
     fun commandPrint(): String =
-        MicrotikApiService.runRequest<ArrayList<AddressResponse>> {
-            MicrotikApiService.getInstance().getAddressApi().print().execute()
+        MikrotikApiService.runRequest<ArrayList<AddressResponse>> {
+            MikrotikApiService.getInstance().getAddressApi().print().execute()
         }.joinToString("\n") { it.toString() }
 
     @Command("add", CommandType.COMMAND, "Adds the address")
@@ -30,8 +30,8 @@ class AddressCommandsList : CommandsListImpl() {
         @CommandOption("i", "interface", true, "Interface")
         interfaces: String
     ): String =
-        MicrotikApiService.runRequest {
-            MicrotikApiService.getInstance().getAddressApi().add(AddressPayload(address, interfaces, network)).execute()
+        MikrotikApiService.runRequest {
+            MikrotikApiService.getInstance().getAddressApi().add(AddressPayload(address, interfaces, network)).execute()
         }.toString()
 
     @Command("edit", CommandType.COMMAND, "Editing the address")
@@ -45,8 +45,8 @@ class AddressCommandsList : CommandsListImpl() {
         @CommandOption("i", "interface", false, "Interface")
         interfaces: String? = null
     ): String =
-        MicrotikApiService.runRequest<AddressResponse> {
-            MicrotikApiService.getInstance().getAddressApi().edit(id, AddressPayload(address, interfaces, network))
+        MikrotikApiService.runRequest<AddressResponse> {
+            MikrotikApiService.getInstance().getAddressApi().edit(id, AddressPayload(address, interfaces, network))
                 .execute()
         }.toString()
 
@@ -55,8 +55,8 @@ class AddressCommandsList : CommandsListImpl() {
         @CommandOption("i", "id", true, "ID Rules")
         id: String
     ): String =
-        MicrotikApiService.runRequest<AddressResponse> {
-            MicrotikApiService.getInstance().getAddressApi().edit(id, AddressPayload(disabled = true)).execute()
+        MikrotikApiService.runRequest<AddressResponse> {
+            MikrotikApiService.getInstance().getAddressApi().edit(id, AddressPayload(disabled = true)).execute()
         }.toString()
 
     @Command("enable", CommandType.COMMAND, "Turn on the rule")
@@ -64,8 +64,8 @@ class AddressCommandsList : CommandsListImpl() {
         @CommandOption("i", "id", true, "ID Rules")
         id: String
     ): String =
-        MicrotikApiService.runRequest<AddressResponse> {
-            MicrotikApiService.getInstance().getAddressApi().edit(id, AddressPayload(disabled = false)).execute()
+        MikrotikApiService.runRequest<AddressResponse> {
+            MikrotikApiService.getInstance().getAddressApi().edit(id, AddressPayload(disabled = false)).execute()
         }.toString()
 
     @Command("remove", CommandType.COMMAND, "Remove the element")
@@ -73,5 +73,5 @@ class AddressCommandsList : CommandsListImpl() {
         @CommandOption("i", "id", true, "Record number")
         id: String
     ): Unit =
-        MicrotikApiService.runRequest<Unit> { MicrotikApiService.getInstance().getAddressApi().remove(id).execute() }
+        MikrotikApiService.runRequest<Unit> { MikrotikApiService.getInstance().getAddressApi().remove(id).execute() }
 }

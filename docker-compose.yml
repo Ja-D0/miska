@@ -6,4 +6,4 @@ services:
       context: .
       dockerfile: Dockerfile
     volumes:
-      - /logs:/var/microtik-api
+      - /logs:/var/miska

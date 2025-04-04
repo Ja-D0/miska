@@ -1,6 +1,6 @@
-package com.microtik
+package com.miska
 
-import com.microtik.core.base.Application
+import com.miska.core.base.Application
 
 fun main() {
     Application().run()

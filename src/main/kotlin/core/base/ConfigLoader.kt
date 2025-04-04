@@ -1,12 +1,12 @@
-package com.microtik.core.base
+package com.miska.core.base
 
 import com.google.gson.Gson
 import com.google.gson.JsonSyntaxException
-import com.microtik.Microtik
-import com.microtik.core.base.config.AbstractConfigLoader
-import com.microtik.core.base.config.exceptions.ConfigFileNotFoundException
-import com.microtik.core.base.config.exceptions.ConfigSyntaxException
-import com.microtik.core.base.config.exceptions.LoadConfigException
+import com.miska.Miska
+import com.miska.core.base.config.AbstractConfigLoader
+import com.miska.core.base.config.exceptions.ConfigFileNotFoundException
+import com.miska.core.base.config.exceptions.ConfigSyntaxException
+import com.miska.core.base.config.exceptions.LoadConfigException
 import java.io.File
 
 /**
@@ -36,7 +36,7 @@ class ConfigLoader : AbstractConfigLoader() {
      */
     override fun load(configFilePath: String?): Config {
         var filePath = configFilePath
-        val dir = Microtik.getBaseJarDir()
+        val dir = Miska.getBaseJarDir()
 
         if (filePath == null) {
             if (File(dir, DEFAULT_CONFIGS_PATH).exists()) {

@@ -1,10 +1,10 @@
-package com.microtik.core.base.interfaces
+package com.miska.core.base.interfaces
 
-import com.microtik.core.base.cli.CommandsListImpl
-import com.microtik.core.base.cli.exceptions.CommandsListNotFoundException
-import com.microtik.core.base.cli.interfaces.CommandsList
-import com.microtik.core.base.cli.interfaces.Request
-import com.microtik.core.base.cli.interfaces.Response
+import com.miska.core.base.cli.CommandsListImpl
+import com.miska.core.base.cli.exceptions.CommandsListNotFoundException
+import com.miska.core.base.cli.interfaces.CommandsList
+import com.miska.core.base.cli.interfaces.Request
+import com.miska.core.base.cli.interfaces.Response
 
 
 /**

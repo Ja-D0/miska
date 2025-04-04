@@ -1,7 +1,7 @@
 FROM ubuntu:latest
 
 # устанавливаем рабочий каталог
-WORKDIR var/microtik-api/
+WORKDIR var/miska-api/
 
 # устанавливаем все необходимые зависимости
 RUN apt-get update && apt-get install -y  \
@@ -24,7 +24,7 @@ COPY ./build/libs/configs.zip .
 RUN unzip configs.zip -d .
 
 # запускаем приложенние
-# CMD ["java", "-jar", "Microtik-0.0.1.jar"]
+# CMD ["java", "-jar", "Miska-0.0.1.jar"]
 
 # dev команда, чтобы докер не умирал после сборки
 CMD ["tail", "-f", "/dev/null"]
