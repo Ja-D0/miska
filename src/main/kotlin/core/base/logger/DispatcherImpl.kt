@@ -12,13 +12,14 @@ class DispatcherImpl : Dispatcher {
         }
     }
 
-    override fun setLogger(logger: Logger) {
-        this.logger = logger.apply { setDispatcher(this@DispatcherImpl) }
+    override fun setLogger(block: () -> Logger) {
+        logger = block()
+        logger!!.setDispatcher(this)
     }
 
     override fun getLogger(): Logger = logger ?: Microtik.logger
 
-    override fun registerTarget(target: Target) {
-        targets.add(target)
+    override fun registerTarget(block: () -> Target) {
+        targets.add(block())
     }
 }

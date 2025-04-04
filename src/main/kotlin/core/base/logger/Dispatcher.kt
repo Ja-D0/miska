@@ -3,9 +3,13 @@ package com.microtik.core.base.logger
 interface Dispatcher {
     fun dispatch(message: Message)
 
-    fun setLogger(logger: Logger)
+    fun setLogger(block: () -> Logger)
 
     fun getLogger(): Logger
 
-    fun registerTarget(target: Target)
+    fun registerTarget(block: () -> Target)
+}
+
+fun <T : Dispatcher> T.configure(block: T.() -> Unit) {
+    block()
 }

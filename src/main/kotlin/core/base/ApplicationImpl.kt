@@ -12,7 +12,6 @@ import com.microtik.core.base.cli.interfaces.CommandsList
 import com.microtik.core.base.cli.interfaces.Response
 import com.microtik.core.base.interfaces.Application
 import com.microtik.core.base.interfaces.Configurable
-import com.microtik.core.base.logger.Dispatcher
 import com.microtik.core.base.logger.DispatcherImpl
 import com.microtik.core.base.logger.FileTarget
 import com.microtik.core.commandLists.RootCommandsList
@@ -31,41 +30,46 @@ abstract class ApplicationImpl(configFilePath: String? = null) : Application, Co
     private lateinit var config: Config
     private val traceCommandsLists: MutableList<CommandsList> = mutableListOf(RootCommandsList())
     private val inlineCommandsList: CommandsList = InlineCommandsList()
-    private lateinit var currentPath: String
+    private var currentPath: String
 
     init {
         loadConfig(configFilePath)
         initLogger(config)
         currentPath = getCommandsListPath(getCurrentCommandsList())
-
     }
 
     private fun initLogger(config: Config) {
-        val dispatcher: Dispatcher = DispatcherImpl()
+        val dispatcher = DispatcherImpl()
         try {
-            dispatcher.registerTarget(
-                FileTarget(
-                    config.logsConfig.appLogsConfig.filename,
-                    config.logsConfig.appLogsConfig.path,
-                    listOf("info", "alert", "http")
-                )
-            )
-            dispatcher.registerTarget(
-                FileTarget(
-                    config.logsConfig.alertLogsConfig.filename,
-                    config.logsConfig.alertLogsConfig.path,
-                    listOf("alert")
-                )
-            )
-            dispatcher.registerTarget(
-                FileTarget(
-                    config.logsConfig.httpLogsConfig.filename,
-                    config.logsConfig.httpLogsConfig.path,
-                    listOf("http")
-                )
-            )
+            dispatcher.apply {
+                registerTarget {
+                    FileTarget(
+                        config.logsConfig.appLogsConfig.filename,
+                        config.logsConfig.appLogsConfig.path,
+                        listOf("error", "info", "alert", "http")
+                    )
+                }
 
-            dispatcher.setLogger(Microtik.logger)
+                registerTarget {
+                    FileTarget(
+                        config.logsConfig.alertLogsConfig.filename,
+                        config.logsConfig.alertLogsConfig.path,
+                        listOf("alert")
+                    )
+                }
+
+                registerTarget {
+                    FileTarget(
+                        config.logsConfig.httpLogsConfig.filename,
+                        config.logsConfig.httpLogsConfig.path,
+                        listOf("http")
+                    )
+                }
+
+                setLogger {
+                    Microtik.logger
+                }
+            }
         } catch (e: Exception) {
             cliOut(e.message ?: "Unknown error")
             System.exit(1)
@@ -111,7 +115,7 @@ abstract class ApplicationImpl(configFilePath: String? = null) : Application, Co
         try {
             config = ConfigLoader().load(configFilePath)
         } catch (exception: FileNotFoundException) {
-            cliOut(exception.message!!)
+            cliOut(exception.message ?: "Config file not found")
             System.exit(1)
         } catch (applicationException: ApplicationException) {
             cliOut(applicationException.message)
