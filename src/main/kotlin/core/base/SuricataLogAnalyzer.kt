@@ -12,6 +12,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import java.net.ConnectException
 import java.util.concurrent.ConcurrentHashMap
 
@@ -25,6 +27,7 @@ class SuricataLogAnalyzer {
     private val gsonSerializer = Gson()
 
     private val processingAddresses = ConcurrentHashMap<String, String>()
+    private val mutex = Mutex()
 
     init {
         val config = Miska.app.getConfig().suricataIps
@@ -154,17 +157,19 @@ class SuricataLogAnalyzer {
      * @return [Unit]
      */
     private suspend fun manageSuricataFilterRule() {
-        val rule: FirewallFilterResponse? = checkSuricataRuleExists()
+        mutex.withLock {
+            val rule: FirewallFilterResponse? = checkSuricataRuleExists()
 
-        if (rule != null) {
-            if (rule.disabled) {
-                enableSuricataFilterRule(rule)
+            if (rule != null) {
+                if (rule.disabled) {
+                    enableSuricataFilterRule(rule)
+                }
+
+                return
             }
 
-            return
+            createSuricataFilterRule()
         }
-
-        createSuricataFilterRule()
     }
 
     private suspend fun checkSuricataRuleExists(): FirewallFilterResponse? =
