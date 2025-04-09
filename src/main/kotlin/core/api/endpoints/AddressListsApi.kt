@@ -7,7 +7,10 @@ import retrofit2.http.*
 
 interface AddressListsApi : Api {
     @GET("ip/firewall/address-list")
-    fun print(@Query("list") list: String? = null): Call<ArrayList<AddressListsResponse>>
+    fun print(
+        @Query("list") list: String? = null,
+        @Query("address") address: String? = null
+    ): Call<ArrayList<AddressListsResponse>>
 
     @PUT("ip/firewall/address-list")
     fun add(@Body payload: AddressListPayload): Call<AddressListsResponse>

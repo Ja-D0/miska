@@ -7,7 +7,12 @@ import retrofit2.http.*
 
 interface FirewallFilterApi : Api {
     @GET("ip/firewall/filter")
-    fun print(): Call<ArrayList<FirewallFilterResponse>>
+    fun print(
+        @Query("chain") chain: String? = null,
+        @Query("src-address-list") srcAddressList: String? = null,
+        @Query("in-interface") inInterface: String? = null,
+        @Query("action") action: String? = null
+    ): Call<ArrayList<FirewallFilterResponse>>
 
     @PUT("ip/firewall/filter")
     fun add(@Body payload: FirewallFilterPayload): Call<FirewallFilterResponse>

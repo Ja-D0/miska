@@ -1,8 +1,8 @@
+import java.net.URI
+
 plugins {
     kotlin("jvm") version "1.9.22"
-    kotlin("plugin.spring") version "1.9.25"
-    id("org.springframework.boot") version "3.4.3"
-    id("io.spring.dependency-management") version "1.1.7"
+    id("org.jetbrains.kotlin.plugin.serialization") version "1.9.22" // тоже не трогать
 }
 
 val miskaEnvIsDev: String by project
@@ -12,6 +12,8 @@ version = "0.0.1-${if (miskaEnvIsDev.toBoolean()) "debug" else ""}"
 
 repositories {
     mavenCentral()
+    maven { url = URI("https://jitpack.io") }
+
 }
 
 tasks.jar {
@@ -29,16 +31,21 @@ tasks.jar {
 }
 
 dependencies {
-    testImplementation("org.jetbrains.kotlin:kotlin-test")
-    testImplementation("org.springframework.boot:spring-boot-starter-test")
-    implementation("org.springframework.boot:spring-boot-starter-web")
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
+    implementation("io.github.kotlin-telegram-bot.kotlin-telegram-bot:telegram:6.0.0")
+
+    /// ниже не трогать
+    implementation("io.ktor:ktor-server-core:2.3.7")
+    implementation("io.ktor:ktor-server-netty:2.3.7")
+    implementation("io.ktor:ktor-server-content-negotiation:2.3.7")
+    implementation("io.ktor:ktor-serialization-kotlinx-json:2.3.7")
+    implementation("ch.qos.logback:logback-classic:1.4.5")
     implementation("com.squareup.retrofit2:retrofit:2.11.0")
     implementation("com.squareup.okhttp3:logging-interceptor:4.12.0")
     implementation("com.squareup.retrofit2:converter-gson:2.11.0")
     implementation("commons-cli:commons-cli:1.9.0")
     implementation("com.google.code.gson:gson:2.11.0")
     implementation(kotlin("reflect"))
+    testImplementation("org.jetbrains.kotlin:kotlin-test")
 }
 
 tasks.test {

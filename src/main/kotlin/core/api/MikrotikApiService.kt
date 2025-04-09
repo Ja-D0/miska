@@ -48,7 +48,7 @@ class MikrotikApiService private constructor() {
                 if (response.errorBody() != null) {
                     val errorBody = Gson().fromJson(response.errorBody()!!.string(), ErrorResponse::class.java)
 
-                    throw FailedRequestException(errorBody.error, errorBody.detail, errorBody.detail)
+                    throw FailedRequestException(errorBody.error, errorBody.detail, errorBody.message)
                 }
 
                 throw FailedRequestException(response.code(), response.body().toString(), response.message())
