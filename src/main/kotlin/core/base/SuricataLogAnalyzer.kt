@@ -48,18 +48,13 @@ class SuricataLogAnalyzer {
         }
 
         scope.launch {
+
             val srcIpAddress = log.src_ip
 
             // Анализируем ...
 
-            if (!addressAlreadyExists(srcIpAddress)) {
-                Miska.info("$srcIpAddress address does not exist in address list $addressListName.")
-
-                if (!addAddressToAddressList(srcIpAddress)) {
-                    Miska.info("$srcIpAddress Address was not added to address list $addressListName")
-                } else {
-                    manageSuricataFilterRule()
-                }
+            if (!addAddressToAddressList(srcIpAddress)) {
+                Miska.info("$srcIpAddress Address was not added to address list $addressListName")
             } else {
                 manageSuricataFilterRule()
             }
@@ -68,6 +63,7 @@ class SuricataLogAnalyzer {
         }
     }
 
+    @Deprecated("The function is not mandatory for use")
     private suspend fun addressAlreadyExists(ipAddress: String): Boolean {
 
         val result = requestWithRepeat { repeatCount ->
@@ -131,12 +127,18 @@ class SuricataLogAnalyzer {
 
             if (response.errorBody() != null) {
                 val errorResponse =
-                    gsonSerializer.fromJson(response.errorBody().toString(), ErrorResponse::class.java)
+                    gsonSerializer.fromJson(response.errorBody()!!.string(), ErrorResponse::class.java)
 
-                Miska.info( //TODO: добавить категорию лога, иначе в большом потоке не будет понятно к чему эти логи
-                    "Request was unsuccessful: code: ${errorResponse.error}, message: ${errorResponse.message}, " +
-                            "detail: ${errorResponse.detail}"
-                )
+                if (addressAlreadyExistsFromErrorResponse(errorResponse)) {
+                    Miska.info("Address $ipAddress already exists in the address list $addressListName. Skip")
+
+                    success = true
+                } else {
+                    Miska.info( //TODO: добавить категорию лога, иначе в большом потоке не будет понятно к чему эти логи
+                        "Request was unsuccessful: code: ${errorResponse.error}, message: ${errorResponse.message}, " +
+                                "detail: ${errorResponse.detail}"
+                    )
+                }
             }
 
             success
@@ -147,6 +149,14 @@ class SuricataLogAnalyzer {
         }
 
         return result
+    }
+
+    private suspend fun addressAlreadyExistsFromErrorResponse(errorResponse: ErrorResponse): Boolean {
+        val expectedMessage = "Bad Request"
+        val expectedStatus = 400
+        val expectedDetail = "failure: already have such entry"
+
+        return errorResponse.run { error == expectedStatus && message == expectedMessage && detail == expectedDetail }
     }
 
     /**
