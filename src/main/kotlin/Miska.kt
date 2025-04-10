@@ -18,23 +18,23 @@ object Miska {
         return File(str).parentFile.toString()
     }
 
-    fun log(message: String, level: String) {
-        logger.log(message, level)
+    fun log(message: String, level: String, category: String = "*") {
+        logger.log(message, level, category)
     }
 
-    fun http(message: String) {
-        logger.log(message, "http")
+    fun http(message: String, category: String = "*") {
+        log(message, "http", category)
     }
 
-    fun alert(message: String) {
-        logger.log(message, "alert")
+    fun alert(message: String, category: String = "*") {
+        log(message, "alert", category)
     }
 
-    fun info(message: String) {
-        logger.log(message, "info")
+    fun info(message: String, category: String = "*") {
+        log(message, "info", category)
     }
 
-    fun error(message: String) {
-        logger.log(message, "error")
+    fun error(message: String, category: String = "*") {
+        log(message, "error", category)
     }
 }

@@ -42,7 +42,7 @@ class SuricataLogAnalyzer {
     suspend fun analysis(log: BlockRequest) {
 
         if (processingAddresses.putIfAbsent(log.src_ip, log.src_ip) != null) {
-            Miska.info("${log.src_ip} is already being processed.")
+            Miska.info("${log.src_ip} is already being processed.", "suricata-info")
 
             return
         }
@@ -54,7 +54,9 @@ class SuricataLogAnalyzer {
             // Анализируем ...
 
             if (!addAddressToAddressList(srcIpAddress)) {
-                Miska.info("$srcIpAddress Address was not added to address list $addressListName")
+                Miska.alert(
+                    "$srcIpAddress Address was not added to address list $addressListName", "suricata-alert"
+                )
             } else {
                 manageSuricataFilterRule()
             }
@@ -71,7 +73,8 @@ class SuricataLogAnalyzer {
 
             Miska.info(
                 "Checking the availability of address $ipAddress in the address list $addressListName. " +
-                        "Attempt ${repeatCount + 1} of $repeatRequestCount."
+                        "Attempt ${repeatCount + 1} of $repeatRequestCount.",
+                "suricata-info"
             )
 
             val response =
@@ -83,7 +86,9 @@ class SuricataLogAnalyzer {
                 success = addressesLists!!.isNotEmpty()
 
                 if (success) {
-                    Miska.info("Address $ipAddress already exists in the address list $addressListName. Skip")
+                    Miska.info(
+                        "Address $ipAddress already exists in the address list $addressListName. Skip.", "suricata-info"
+                    )
                 }
             }
 
@@ -91,9 +96,10 @@ class SuricataLogAnalyzer {
                 val errorResponse =
                     gsonSerializer.fromJson(response.errorBody().toString(), ErrorResponse::class.java)
 
-                Miska.info( //TODO: добавить категорию лога, иначе в большом потоке не будет понятно к чему эти логи
+                Miska.alert( //TODO: добавить категорию лога, иначе в большом потоке не будет понятно к чему эти логи
                     "Request was unsuccessful: code: ${errorResponse.error}, message: ${errorResponse.message}, " +
-                            "detail: ${errorResponse.detail}"
+                            "detail: ${errorResponse.detail}",
+                    "suricata-alert"
                 )
             }
 
@@ -113,14 +119,17 @@ class SuricataLogAnalyzer {
 
             Miska.info(
                 "An attempt to add $ipAddress to Address List $addressListName. " +
-                        "Attempt ${repeatCount + 1} of $repeatRequestCount."
+                        "Attempt ${repeatCount + 1} of $repeatRequestCount.",
+                "suricata-info"
             )
 
             val response = MikrotikApiService.getInstance().getAddressListsApi()
                 .add(AddressListPayload(addressListName, ipAddress)).execute()
 
             if (response.isSuccessful && response.body() != null) {
-                Miska.info("$ipAddress address are successfully added to address list $addressListName.")
+                Miska.alert(
+                    "$ipAddress address are successfully added to address list $addressListName.", "suricata-alert"
+                )
 
                 success = true
             }
@@ -130,13 +139,16 @@ class SuricataLogAnalyzer {
                     gsonSerializer.fromJson(response.errorBody()!!.string(), ErrorResponse::class.java)
 
                 if (addressAlreadyExistsFromErrorResponse(errorResponse)) {
-                    Miska.info("Address $ipAddress already exists in the address list $addressListName. Skip")
+                    Miska.info(
+                        "Address $ipAddress already exists in the address list $addressListName. Skip.", "suricata-info"
+                    )
 
                     success = true
                 } else {
-                    Miska.info( //TODO: добавить категорию лога, иначе в большом потоке не будет понятно к чему эти логи
+                    Miska.alert( //TODO: добавить категорию лога, иначе в большом потоке не будет понятно к чему эти логи
                         "Request was unsuccessful: code: ${errorResponse.error}, message: ${errorResponse.message}, " +
-                                "detail: ${errorResponse.detail}"
+                                "detail: ${errorResponse.detail}",
+                        "suricata-alert"
                     )
                 }
             }
@@ -188,7 +200,8 @@ class SuricataLogAnalyzer {
 
             Miska.info(
                 "An attempt to check the availability of the Suricata filter rule for blocking. " +
-                        "Attempt ${repeatCount + 1} of $repeatRequestCount."
+                        "Attempt ${repeatCount + 1} of $repeatRequestCount.",
+                "suricata-info"
             )
 
             val response = MikrotikApiService.getInstance().getFirewallFilterApi()
@@ -200,7 +213,7 @@ class SuricataLogAnalyzer {
                 if (filterRulesList!!.isNotEmpty()) {
                     success = filterRulesList.first()
 
-                    Miska.info("Suricata filter rule was found id = \"${success.id}\"")
+                    Miska.info("Suricata filter rule was found id = \"${success.id}\"", "suricata-info")
                 }
             }
 
@@ -208,9 +221,10 @@ class SuricataLogAnalyzer {
                 val errorResponse =
                     gsonSerializer.fromJson(response.errorBody().toString(), ErrorResponse::class.java)
 
-                Miska.info( //TODO: добавить категорию лога, иначе в большом потоке не будет понятно к чему эти логи
+                Miska.alert( //TODO: добавить категорию лога, иначе в большом потоке не будет понятно к чему эти логи
                     "Request was unsuccessful: code: ${errorResponse.error}, message: ${errorResponse.message}, " +
-                            "detail: ${errorResponse.detail}"
+                            "detail: ${errorResponse.detail}",
+                    "suricata-alert"
                 )
             }
 
@@ -223,7 +237,8 @@ class SuricataLogAnalyzer {
 
             Miska.info(
                 "Trying to enable the Suricata filter rule for blocking id = ${rule.id}. " +
-                        "Attempt ${repeatCount + 1} of $repeatRequestCount."
+                        "Attempt ${repeatCount + 1} of $repeatRequestCount.",
+                "suricata-info"
             )
 
             val response = MikrotikApiService.getInstance().getFirewallFilterApi()
@@ -232,16 +247,20 @@ class SuricataLogAnalyzer {
             if (response.isSuccessful && response.body() != null) {
                 success = true
 
-                Miska.info("The rule of the Suricata id = ${rule.id} filter was turned on for blocking.")
+                Miska.info(
+                    "The rule of the Suricata id = ${rule.id} filter was turned on for blocking.",
+                    "suricata-info"
+                )
             }
 
             if (response.errorBody() != null) {
                 val errorResponse =
                     gsonSerializer.fromJson(response.errorBody().toString(), ErrorResponse::class.java)
 
-                Miska.info( //TODO: добавить категорию лога, иначе в большом потоке не будет понятно к чему эти логи
+                Miska.alert( //TODO: добавить категорию лога, иначе в большом потоке не будет понятно к чему эти логи
                     "Request was unsuccessful: code: ${errorResponse.error}, message: ${errorResponse.message}, " +
-                            "detail: ${errorResponse.detail}"
+                            "detail: ${errorResponse.detail}",
+                    "suricata-alert"
                 )
             }
 
@@ -261,7 +280,8 @@ class SuricataLogAnalyzer {
 
             Miska.info(
                 "An attempt to create a Suricata filter rule for blocking. " +
-                        "Attempt ${repeatCount + 1} of $repeatRequestCount."
+                        "Attempt ${repeatCount + 1} of $repeatRequestCount.",
+                "suricata-info"
             )
 
             val response = MikrotikApiService.getInstance().getFirewallFilterApi().add(
@@ -278,16 +298,20 @@ class SuricataLogAnalyzer {
             if (response.isSuccessful && response.body() != null) {
                 val filterRule = response.body()
                 success = true
-                Miska.info("Suricata filter rule for blocking was created id = \"${filterRule!!.id}\"")
+                Miska.info(
+                    "Suricata filter rule for blocking was created id = \"${filterRule!!.id}\"",
+                    "suricata-info"
+                )
             }
 
             if (response.errorBody() != null) {
                 val errorResponse =
                     gsonSerializer.fromJson(response.errorBody().toString(), ErrorResponse::class.java)
 
-                Miska.info( //TODO: добавить категорию лога, иначе в большом потоке не будет понятно к чему эти логи
+                Miska.alert( //TODO: добавить категорию лога, иначе в большом потоке не будет понятно к чему эти логи
                     "Request was unsuccessful: code: ${errorResponse.error}, message: ${errorResponse.message}, " +
-                            "detail: ${errorResponse.detail}"
+                            "detail: ${errorResponse.detail}",
+                    "suricata-alert"
                 )
             }
 
@@ -308,7 +332,7 @@ class SuricataLogAnalyzer {
             try {
                 return request(repeatCount)
             } catch (connectionException: ConnectException) {
-                Miska.info("Connection error: " + (connectionException.message ?: "unknown error."))
+                Miska.alert("Connection error: " + (connectionException.message ?: "unknown error."), "suricata-alert")
 
                 if (++repeatCount != repeatRequestCount) {
                     delay(repeatThreshold)
