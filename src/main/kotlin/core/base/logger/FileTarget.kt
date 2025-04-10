@@ -6,7 +6,12 @@ import java.io.File
 import java.io.FileWriter
 import java.io.IOException
 
-class FileTarget(val logFileName: String, val logFilePath: String, val levels: List<String>) : Target {
+class FileTarget(
+    val logFileName: String,
+    val logFilePath: String,
+    override val levels: List<String>,
+    override val categories: List<String>
+) : Target {
     private var file: File
 
     init {
@@ -41,10 +46,8 @@ class FileTarget(val logFileName: String, val logFilePath: String, val levels: L
 
     @Synchronized
     override fun collect(message: Message) {
-        if (message.level !in levels) return
-
         try {
-            val logEntry = "[${message.time}][${message.level.uppercase()}] ${message.message}\n"
+            val logEntry = "[${message.time}][${message.category}][${message.level.uppercase()}] ${message.message}\n"
             FileWriter(file, true).use { writer -> writer.write(logEntry) }
         } catch (e: IOException) {
             Miska.error("There was an error when writing to a file ${file.absoluteFile}")

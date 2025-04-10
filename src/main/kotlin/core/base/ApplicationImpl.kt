@@ -46,7 +46,8 @@ abstract class ApplicationImpl(configFilePath: String? = null) : Application, Co
                     FileTarget(
                         config.logsConfig.appLogsConfig.filename,
                         config.logsConfig.appLogsConfig.path,
-                        listOf("error", "info", "alert", "http")
+                        listOf("*"),
+                        listOf("*")
                     )
                 }
 
@@ -54,7 +55,17 @@ abstract class ApplicationImpl(configFilePath: String? = null) : Application, Co
                     FileTarget(
                         config.logsConfig.alertLogsConfig.filename,
                         config.logsConfig.alertLogsConfig.path,
-                        listOf("alert")
+                        listOf("alert"),
+                        listOf("suricata-alert")
+                    )
+                }
+
+                registerTarget {
+                    FileTarget(
+                        "suricata-ips-info",
+                        "logs/",
+                        listOf("info"),
+                        listOf("suricata-info")
                     )
                 }
 
@@ -62,7 +73,8 @@ abstract class ApplicationImpl(configFilePath: String? = null) : Application, Co
                     FileTarget(
                         config.logsConfig.httpLogsConfig.filename,
                         config.logsConfig.httpLogsConfig.path,
-                        listOf("http")
+                        listOf("http"),
+                        listOf("*")
                     )
                 }
 
