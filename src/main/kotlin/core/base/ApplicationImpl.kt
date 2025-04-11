@@ -62,10 +62,10 @@ abstract class ApplicationImpl(configFilePath: String? = null) : Application, Co
 
                 registerTarget {
                     FileTarget(
-                        "suricata-ips-info",
+                        "suricata-ips-info.log",
                         "logs/",
-                        listOf("info"),
-                        listOf("suricata-info")
+                        listOf("info", "alert"),
+                        listOf("suricata-info", "suricata-alert")
                     )
                 }
 

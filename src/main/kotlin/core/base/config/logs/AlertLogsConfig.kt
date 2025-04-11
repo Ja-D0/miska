@@ -7,5 +7,7 @@ data class AlertLogsConfig(
     @SerializedName("path")
     val path: String = "logs/",
     @SerializedName("filename")
-    val filename: String = "alert.log"
+    val filename: String = "alert.log",
+    @SerializedName("telegram_bot")
+    val telegramBotConfig: TelegramBotConfig = TelegramBotConfig()
 ) : AbstractConfig()

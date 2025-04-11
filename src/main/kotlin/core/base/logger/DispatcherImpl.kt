@@ -38,7 +38,7 @@ class DispatcherImpl : Dispatcher {
 
     override fun setLogger(block: () -> Logger) {
         logger = block()
-        logger!!.setDispatcher(this)
+        logger!!.dispatcher = this
     }
 
     override fun getLogger(): Logger = logger ?: Miska.logger

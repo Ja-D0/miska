@@ -7,6 +7,7 @@ import com.miska.core.api.requestModels.AddressListPayload
 import com.miska.core.api.requestModels.FirewallFilterPayload
 import com.miska.core.api.responseModels.ErrorResponse
 import com.miska.core.api.responseModels.FirewallFilterResponse
+import com.miska.core.base.logger.TelegramBotTarget
 import com.miska.core.spring.BlockRequest
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -37,10 +38,11 @@ class SuricataLogAnalyzer {
         mikrotikFilterRuleChain = config.mikrotikFilterRuleChain
         repeatThreshold = config.repeatThreshold
         repeatRequestCount = config.repeatRequestCount
+
+        registerTelegramBotAlerts()
     }
 
     suspend fun analysis(log: BlockRequest) {
-
         if (processingAddresses.putIfAbsent(log.src_ip, log.src_ip) != null) {
             Miska.info("${log.src_ip} is already being processed.", "suricata-info")
 
@@ -62,6 +64,15 @@ class SuricataLogAnalyzer {
             }
 
             processingAddresses.remove(log.src_ip)
+        }
+    }
+
+    private fun registerTelegramBotAlerts() {
+        Miska.logger.dispatcher.registerTarget {
+            TelegramBotTarget(
+                listOf("alert"),
+                listOf("suricata-alert")
+            )
         }
     }
 
