@@ -13,4 +13,4 @@ data class SuricataIpsConfig(
     val mikrotikInInterface: String = "ether1",
     @SerializedName("mikrotik_filter_rule_chain")
     val mikrotikFilterRuleChain: String = "input"
-)
+) : AbstractConfig()
