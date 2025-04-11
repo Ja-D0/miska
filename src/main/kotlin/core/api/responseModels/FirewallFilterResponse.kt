@@ -47,12 +47,15 @@ data class FirewallFilterResponse(
     val srcAddressList: String? = null,
     @SerializedName("src-port")
     val srcPort: String? = null,
+    @SerializedName("comment")
+    val comment: String? = null
 ) : Response {
     override fun toString(): String {
         return "ID: $id, Action: $action, Bytes: $bytes, Chain: $chain, Disabled: $disabled, Dynamic: $dynamic, " +
                 "Invalid: $invalid, Log: $log, Log-prefix: $logPrefix, Packets: $packets, Dst Address: $dstAddress, " +
                 "Dst Address List: $dstAddressList, Dst Port: $dstPort, In Interface: $inInterface, In Interface List: " +
                 "$inInterfaceList, Out Interface: $outInterface, Out Interface List: $outInterfaceList, Port: $port, " +
-                "Protocol: $protocol, Src Address: $srcAddress, Src Address List: $srcAddressList, Src Port: $srcPort"
+                "Protocol: $protocol, Src Address: $srcAddress, Src Address List: $srcAddressList, Src Port: $srcPort" +
+                "Comment: $comment"
     }
 }

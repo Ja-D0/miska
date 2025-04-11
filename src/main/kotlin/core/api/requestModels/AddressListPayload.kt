@@ -11,4 +11,6 @@ data class AddressListPayload(
     val timeout: String? = null,
     @SerializedName("disabled")
     val disabled: Boolean? = null,
+    @SerializedName("comment")
+    val comment: String? = null
 ) : Payload

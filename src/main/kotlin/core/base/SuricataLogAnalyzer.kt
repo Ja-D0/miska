@@ -135,7 +135,7 @@ class SuricataLogAnalyzer {
             )
 
             val response = MikrotikApiService.getInstance().getAddressListsApi()
-                .add(AddressListPayload(addressListName, ipAddress)).execute()
+                .add(AddressListPayload(addressListName, ipAddress, comment = "Added by Miska")).execute()
 
             if (response.isSuccessful && response.body() != null) {
                 Miska.alert(
@@ -253,7 +253,11 @@ class SuricataLogAnalyzer {
             )
 
             val response = MikrotikApiService.getInstance().getFirewallFilterApi()
-                .edit(rule.id.replace("*", ""), FirewallFilterPayload(disabled = false)).execute()
+                .edit(
+                    rule.id.replace("*", ""),
+                    FirewallFilterPayload(disabled = false, comment = rule.comment + " Enabled by Miska")
+                )
+                .execute()
 
             if (response.isSuccessful && response.body() != null) {
                 success = true
@@ -302,7 +306,8 @@ class SuricataLogAnalyzer {
                     srcAddressList = addressListName,
                     inInterface = mikrotikInInterface,
                     log = true,
-                    logPrefix = "suricata-rule"
+                    logPrefix = "suricata-rule",
+                    comment = "Created by Miska."
                 )
             ).execute()
 
