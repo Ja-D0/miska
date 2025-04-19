@@ -11,6 +11,4 @@ data class SuricataIpsConfig(
     val repeatRequestCount: Int = 5,
     @SerializedName("mikrotik_in_interface")
     val mikrotikInInterface: String = "ether1",
-    @SerializedName("mikrotik_filter_rule_chain")
-    val mikrotikFilterRuleChain: String = "input"
 ) : AbstractConfig()

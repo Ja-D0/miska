@@ -10,10 +10,7 @@ object Miska {
     val logger: Logger = LoggerImpl()
 
     fun getBaseJarDir(): String {
-        var str = Miska::class.java.protectionDomain.codeSource.location.toURI().toString()
-
-        val matchResult = Regex("C:[^ ]*\\.jar").find(str)
-        str = matchResult!!.value
+        var str = Miska::class.java.protectionDomain.codeSource.location.toURI()
 
         return File(str).parentFile.toString()
     }

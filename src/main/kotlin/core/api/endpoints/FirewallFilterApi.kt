@@ -10,6 +10,7 @@ interface FirewallFilterApi : Api {
     fun print(
         @Query("chain") chain: String? = null,
         @Query("src-address-list") srcAddressList: String? = null,
+        @Query("dst-address-list") dstAddressList: String? = null,
         @Query("in-interface") inInterface: String? = null,
         @Query("action") action: String? = null
     ): Call<ArrayList<FirewallFilterResponse>>

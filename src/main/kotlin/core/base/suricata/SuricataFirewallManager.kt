@@ -1,4 +1,4 @@
-package com.miska.core.base
+package com.miska.core.base.suricata
 
 import com.google.gson.Gson
 import com.miska.Miska
@@ -7,27 +7,19 @@ import com.miska.core.api.requestModels.AddressListPayload
 import com.miska.core.api.requestModels.FirewallFilterPayload
 import com.miska.core.api.responseModels.ErrorResponse
 import com.miska.core.api.responseModels.FirewallFilterResponse
-import com.miska.core.base.logger.TelegramBotTarget
-import com.miska.core.spring.BlockRequest
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import retrofit2.Response
 import java.net.ConnectException
-import java.util.concurrent.ConcurrentHashMap
 
-class SuricataLogAnalyzer {
-    private val scope = CoroutineScope(Dispatchers.IO)
+class SuricataFirewallManager {
     private val addressListName: String
     private val mikrotikInInterface: String
-    private val mikrotikFilterRuleChain: String
     private val repeatThreshold: Long
     private val repeatRequestCount: Int
     private val gsonSerializer = Gson()
 
-    private val processingAddresses = ConcurrentHashMap<String, String>()
     private val mutex = Mutex()
 
     init {
@@ -35,49 +27,22 @@ class SuricataLogAnalyzer {
 
         addressListName = config.addressListName
         mikrotikInInterface = config.mikrotikInInterface
-        mikrotikFilterRuleChain = config.mikrotikFilterRuleChain
         repeatThreshold = config.repeatThreshold
         repeatRequestCount = config.repeatRequestCount
-
-        registerTelegramBotAlerts()
     }
 
-    suspend fun analysis(log: BlockRequest) {
-        if (processingAddresses.putIfAbsent(log.src_ip, log.src_ip) != null) {
-            Miska.info("${log.src_ip} is already being processed.", "suricata-info")
-
-            return
-        }
-
-        scope.launch {
-
-            val srcIpAddress = log.src_ip
-
-            // Анализируем ...
-
-            if (!addAddressToAddressList(srcIpAddress)) {
-                Miska.alert(
-                    "$srcIpAddress Address was not added to address list $addressListName", "suricata-alert"
-                )
-            } else {
-                manageSuricataFilterRule()
-            }
-
-            processingAddresses.remove(log.src_ip)
-        }
-    }
-
-    private fun registerTelegramBotAlerts() {
-        Miska.logger.dispatcher.registerTarget {
-            TelegramBotTarget(
-                listOf("alert"),
-                listOf("suricata-alert")
+    suspend fun blockAddress(ipAddress: String, reason: String) {
+        if (addAddressToAddressList(ipAddress, reason)) {
+            manageSuricataFilterRules()
+        } else {
+            Miska.alert(
+                "$ipAddress address was not added to address list $addressListName", "suricata-alert"
             )
         }
     }
 
     @Deprecated("The function is not mandatory for use")
-    private suspend fun addressAlreadyExists(ipAddress: String): Boolean {
+    suspend fun addressAlreadyExists(ipAddress: String): Boolean {
 
         val result = requestWithRepeat { repeatCount ->
             var success = true
@@ -124,7 +89,7 @@ class SuricataLogAnalyzer {
         return result
     }
 
-    private suspend fun addAddressToAddressList(ipAddress: String): Boolean {
+    suspend fun addAddressToAddressList(ipAddress: String, reason: String): Boolean {
         val result = requestWithRepeat { repeatCount ->
             var success = false
 
@@ -135,11 +100,13 @@ class SuricataLogAnalyzer {
             )
 
             val response = MikrotikApiService.getInstance().getAddressListsApi()
-                .add(AddressListPayload(addressListName, ipAddress, comment = "Added by Miska")).execute()
+                .add(AddressListPayload(addressListName, ipAddress, comment = "Added by Miska. Reason: $reason"))
+                .execute()
 
             if (response.isSuccessful && response.body() != null) {
                 Miska.alert(
-                    "$ipAddress address are successfully added to address list $addressListName.", "suricata-alert"
+                    "$ipAddress address are successfully added to address list $addressListName. Reason: $reason",
+                    "suricata-alert"
                 )
 
                 success = true
@@ -167,14 +134,10 @@ class SuricataLogAnalyzer {
             success
         }
 
-        if (result == null) {
-            return false
-        }
-
-        return result
+        return result ?: false
     }
 
-    private suspend fun addressAlreadyExistsFromErrorResponse(errorResponse: ErrorResponse): Boolean {
+    suspend fun addressAlreadyExistsFromErrorResponse(errorResponse: ErrorResponse): Boolean {
         val expectedMessage = "Bad Request"
         val expectedStatus = 400
         val expectedDetail = "failure: already have such entry"
@@ -189,25 +152,62 @@ class SuricataLogAnalyzer {
      *
      * @return [Unit]
      */
-    private suspend fun manageSuricataFilterRule() {
+    private suspend fun manageSuricataFilterRules() {
         mutex.withLock {
-            val rule: FirewallFilterResponse? = checkSuricataRuleExists()
+            val needRules = arrayListOf(
+                FirewallFilterPayload(
+                    "drop",
+                    "input",
+                    srcAddressList = addressListName,
+                    inInterface = mikrotikInInterface,
+                    log = true,
+                    logPrefix = "suricata-input-rule",
+                    comment = "Created by Miska."
+                ),
+                FirewallFilterPayload(
+                    "drop",
+                    "forward",
+                    srcAddressList = addressListName,
+                    log = true,
+                    logPrefix = "suricata-forward-src-rule",
+                    comment = "Created by Miska."
+                ),
+                FirewallFilterPayload(
+                    "drop",
+                    "forward",
+                    dstAddressList = addressListName,
+                    log = true,
+                    logPrefix = "suricata-forward-dst-rule",
+                    comment = "Created by Miska."
+                )
+            )
 
-            if (rule != null) {
-                if (rule.disabled) {
-                    enableSuricataFilterRule(rule)
+            for (needRule in needRules) {
+                val rule: FirewallFilterResponse? = checkSuricataRuleExists {
+                    MikrotikApiService.getInstance().getFirewallFilterApi()
+                        .print(
+                            needRule.chain,
+                            needRule.srcAddressList,
+                            needRule.dstAddressList,
+                            inInterface = needRule.inInterface,
+                            action = needRule.action
+                        ).execute()
                 }
 
-                return
+                if (rule != null) {
+                    enableSuricataFilterRule(rule)
+                } else {
+                    createSuricataFilterRule(needRule)
+                }
             }
 
-            createSuricataFilterRule()
+            true
         }
     }
 
-    private suspend fun checkSuricataRuleExists(): FirewallFilterResponse? =
+    private suspend fun checkSuricataRuleExists(block: suspend () -> Response<ArrayList<FirewallFilterResponse>>): FirewallFilterResponse? =
         requestWithRepeat { repeatCount ->
-            var success: FirewallFilterResponse? = null
+            var result: FirewallFilterResponse? = null
 
             Miska.info(
                 "An attempt to check the availability of the Suricata filter rule for blocking. " +
@@ -215,16 +215,15 @@ class SuricataLogAnalyzer {
                 "suricata-info"
             )
 
-            val response = MikrotikApiService.getInstance().getFirewallFilterApi()
-                .print(mikrotikFilterRuleChain, addressListName, mikrotikInInterface, "drop").execute()
+            val response: Response<ArrayList<FirewallFilterResponse>> = block()
 
             if (response.isSuccessful && response.body() != null) {
                 val filterRulesList = response.body()
 
                 if (filterRulesList!!.isNotEmpty()) {
-                    success = filterRulesList.first()
+                    result = filterRulesList.first()
 
-                    Miska.info("Suricata filter rule was found id = \"${success.id}\"", "suricata-info")
+                    Miska.info("Suricata ${result.chain} filter rule was found id = \"${result.id}\"", "suricata-info")
                 }
             }
 
@@ -232,14 +231,14 @@ class SuricataLogAnalyzer {
                 val errorResponse =
                     gsonSerializer.fromJson(response.errorBody().toString(), ErrorResponse::class.java)
 
-                Miska.alert( //TODO: добавить категорию лога, иначе в большом потоке не будет понятно к чему эти логи
+                Miska.alert(
                     "Request was unsuccessful: code: ${errorResponse.error}, message: ${errorResponse.message}, " +
                             "detail: ${errorResponse.detail}",
                     "suricata-alert"
                 )
             }
 
-            success
+            result
         }
 
     private suspend fun enableSuricataFilterRule(rule: FirewallFilterResponse): Boolean {
@@ -258,6 +257,8 @@ class SuricataLogAnalyzer {
                     FirewallFilterPayload(disabled = false, comment = rule.comment + " Enabled by Miska")
                 )
                 .execute()
+
+            //TODO: необходимо обработать IOException при неверном адресе сервера
 
             if (response.isSuccessful && response.body() != null) {
                 success = true
@@ -289,7 +290,7 @@ class SuricataLogAnalyzer {
         return result
     }
 
-    private suspend fun createSuricataFilterRule(): Boolean {
+    private suspend fun createSuricataFilterRule(payload: FirewallFilterPayload): Boolean {
         val result = requestWithRepeat { repeatCount ->
             var success = false
 
@@ -299,17 +300,7 @@ class SuricataLogAnalyzer {
                 "suricata-info"
             )
 
-            val response = MikrotikApiService.getInstance().getFirewallFilterApi().add(
-                FirewallFilterPayload(
-                    "drop",
-                    mikrotikFilterRuleChain,
-                    srcAddressList = addressListName,
-                    inInterface = mikrotikInInterface,
-                    log = true,
-                    logPrefix = "suricata-rule",
-                    comment = "Created by Miska."
-                )
-            ).execute()
+            val response = MikrotikApiService.getInstance().getFirewallFilterApi().add(payload).execute()
 
             if (response.isSuccessful && response.body() != null) {
                 val filterRule = response.body()
