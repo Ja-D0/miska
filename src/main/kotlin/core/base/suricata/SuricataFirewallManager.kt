@@ -42,7 +42,7 @@ class SuricataFirewallManager {
     }
 
     @Deprecated("The function is not mandatory for use")
-    suspend fun addressAlreadyExists(ipAddress: String): Boolean {
+    private suspend fun addressAlreadyExists(ipAddress: String): Boolean {
 
         val result = requestWithRepeat { repeatCount ->
             var success = true
@@ -89,7 +89,7 @@ class SuricataFirewallManager {
         return result
     }
 
-    suspend fun addAddressToAddressList(ipAddress: String, reason: String): Boolean {
+    private suspend fun addAddressToAddressList(ipAddress: String, reason: String): Boolean {
         val result = requestWithRepeat { repeatCount ->
             var success = false
 
