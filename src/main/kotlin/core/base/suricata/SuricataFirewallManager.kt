@@ -195,7 +195,9 @@ class SuricataFirewallManager {
                 }
 
                 if (rule != null) {
-                    enableSuricataFilterRule(rule)
+                    if (rule.disabled) {
+                        enableSuricataFilterRule(rule)
+                    }
                 } else {
                     createSuricataFilterRule(needRule)
                 }
