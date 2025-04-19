@@ -2,7 +2,6 @@ import java.net.URI
 
 plugins {
     kotlin("jvm") version "1.9.22"
-    id("org.jetbrains.kotlin.plugin.serialization") version "1.9.22" // тоже не трогать
 }
 
 val miskaEnvIsDev: String by project
@@ -37,7 +36,7 @@ dependencies {
     implementation("io.ktor:ktor-server-core:2.3.7")
     implementation("io.ktor:ktor-server-netty:2.3.7")
     implementation("io.ktor:ktor-server-content-negotiation:2.3.7")
-    implementation("io.ktor:ktor-serialization-kotlinx-json:2.3.7")
+    implementation("io.ktor:ktor-serialization-gson:2.3.7")
     implementation("ch.qos.logback:logback-classic:1.4.5")
     implementation("com.squareup.retrofit2:retrofit:2.11.0")
     implementation("com.squareup.okhttp3:logging-interceptor:4.12.0")

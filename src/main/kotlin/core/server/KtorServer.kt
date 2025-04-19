@@ -1,10 +1,10 @@
-package com.miska.core.spring
+package com.miska.core.server
 
 
 import com.miska.Miska
-import com.miska.core.base.SuricataLogAnalyzer
+import com.miska.core.base.suricata.SuricataLogAnalyzer
 import io.ktor.http.*
-import io.ktor.serialization.kotlinx.json.*
+import io.ktor.serialization.gson.*
 import io.ktor.server.application.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
@@ -27,20 +27,17 @@ class KtorServer {
 
         server = embeddedServer(Netty, port = 8080) {
             install(ContentNegotiation) {
-                json()
+                gson()
             }
             routing {
-                get("/") {
-                    call.respondText("Привет от REST API!")
-                }
-
-                post("/block-ip") {
+                post("/analyze") {
                     try {
-                        suricataLogAnalyzer.analysis(call.receive<BlockRequest>())
-                        call.respond(HttpStatusCode.OK, "OK")
+                        var a = call.receive<AlertRequest>()
+                        suricataLogAnalyzer.analysis(a)
+                        call.respond(HttpStatusCode.OK, a)
                     } catch (e: Exception) {
-                        Miska.error(e.message ?: "block-ip unknown error")
-                        call.respond(HttpStatusCode.InternalServerError, e.message ?: "block-ip unknown error")
+                        Miska.error(e.message ?: "analysis unknown error")
+                        call.respond(HttpStatusCode.InternalServerError, e.message ?: "analysis unknown error")
                     }
                 }
             }
