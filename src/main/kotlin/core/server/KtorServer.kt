@@ -67,4 +67,7 @@ class KtorServer {
     }
 
     fun isRunning(): Boolean = isRunning
+
+    fun reloadingTheAnalyzingRules() = suricataLogAnalyzer.reloadRules()
+
 }

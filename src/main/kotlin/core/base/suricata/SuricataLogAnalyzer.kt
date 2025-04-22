@@ -3,7 +3,6 @@ package com.miska.core.base.suricata
 import com.google.gson.Gson
 import com.google.gson.JsonSyntaxException
 import com.miska.Miska
-import com.miska.core.base.logger.TelegramBotTarget
 import com.miska.core.server.AlertRequest
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -19,7 +18,6 @@ class SuricataLogAnalyzer {
 
     init {
         parseRules()
-        registerTelegramBotAlerts()
     }
 
     suspend fun analyzeAndMakeADecision(alert: AlertRequest) {
@@ -122,15 +120,6 @@ class SuricataLogAnalyzer {
                 rule.categoriesMatches.any { alert.category.startsWith(it) }
     }.toSet()
 
-    private fun registerTelegramBotAlerts() {
-        Miska.logger.dispatcher.registerTarget {
-            TelegramBotTarget(
-                listOf("alert"),
-                listOf("suricata-alert")
-            )
-        }
-    }
-
     private fun parseRules() {
         val filePath = Miska.app.getConfig().suricataIps.rulesFilepath
         val filename = Miska.app.getConfig().suricataIps.rulesFilename
@@ -154,4 +143,7 @@ class SuricataLogAnalyzer {
 
         info("Rules for comparison loaded: ${rules.count()}")
     }
+
+    fun reloadRules() = parseRules()
+
 }

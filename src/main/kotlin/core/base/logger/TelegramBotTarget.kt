@@ -6,7 +6,7 @@ import com.github.kotlintelegrambot.dispatch
 import com.github.kotlintelegrambot.dispatcher.text
 import com.github.kotlintelegrambot.entities.ChatId
 import com.github.kotlintelegrambot.entities.ParseMode
-import com.miska.Miska
+import com.miska.core.base.config.logs.TelegramBotConfig
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
@@ -14,7 +14,11 @@ import kotlinx.coroutines.channels.consumeEach
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-class TelegramBotTarget(override val levels: List<String>, override val categories: List<String>) : Target {
+class TelegramBotTarget(
+    config: TelegramBotConfig,
+    override val levels: List<String>,
+    override val categories: List<String>
+) : Target {
     private var bot: Bot? = null
     private var scope: CoroutineScope? = null
     private var messageChannel: Channel<String>? = null
@@ -23,7 +27,6 @@ class TelegramBotTarget(override val levels: List<String>, override val categori
     private val token: String
 
     init {
-        val config = Miska.app.getConfig().logsConfig.alertLogsConfig.telegramBotConfig
         messageInterval = config.messageInterval
         chatId = config.chatId
         token = config.token

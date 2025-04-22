@@ -15,6 +15,7 @@ import com.miska.core.base.interfaces.Application
 import com.miska.core.base.interfaces.Configurable
 import com.miska.core.base.logger.DispatcherImpl
 import com.miska.core.base.logger.FileTarget
+import com.miska.core.base.logger.TelegramBotTarget
 import com.miska.core.commandLists.RootCommandsList
 import com.miska.core.server.KtorServer
 import java.io.FileNotFoundException
@@ -82,6 +83,14 @@ abstract class ApplicationImpl(configFilePath: String? = null) : Application, Co
                         config.logsConfig.httpLogsConfig.path,
                         listOf("http"),
                         listOf("*")
+                    )
+                }
+
+                registerTarget {
+                    TelegramBotTarget(
+                        config.logsConfig.alertLogsConfig.telegramBotConfig,
+                        listOf("alert"),
+                        listOf("suricata-alert")
                     )
                 }
 
@@ -347,6 +356,7 @@ abstract class ApplicationImpl(configFilePath: String? = null) : Application, Co
     fun reloadRulesForAnalyzeAlerts(): String {
         if (server.isRunning()) {
             stopAnalyzeAlertServer()
+            server.reloadingTheAnalyzingRules()
             startAnalyzeAlertServer()
 
             return "Rules reloaded"
