@@ -49,7 +49,7 @@ class SuricataLogAnalyzer {
                         """
                         *Verdict:* `blocked ip $targetIp`
                         *Rule name:* `${decisionRule.name}`
-                        *Timeout:* `${decisionRule.timeout}`
+                        *Timeout:* `${decisionRule.timeout.toDate()}`
                         *Date of detection:* `${verdict.alert.timestamp}`
                         *Signature:* `${verdict.alert.signature}`
                         *Category:* `${verdict.alert.category}`

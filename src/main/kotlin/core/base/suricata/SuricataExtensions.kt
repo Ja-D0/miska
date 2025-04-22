@@ -7,3 +7,9 @@ fun Any.info(message: String) = Miska.info(message, "suricata-info")
 fun Any.error(message: String) = Miska.error(message, "suricata-info")
 
 fun Any.alert(message: String) = Miska.alert(message.trimIndent(), "suricata-alert")
+
+fun Long?.toDate(): String? {
+    if (this == null) return null
+
+    return String.format("%02d:%02d:%02d", this / 3600, this / 60 % 60, this % 60)
+}
