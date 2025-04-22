@@ -23,8 +23,6 @@ class KtorServer {
             return false
         }
 
-        isRunning = true
-
         server = embeddedServer(Netty, port = 8080) {
             install(ContentNegotiation) {
                 gson()
@@ -32,9 +30,8 @@ class KtorServer {
             routing {
                 post("/analyze") {
                     try {
-                        var a = call.receive<AlertRequest>()
-                        suricataLogAnalyzer.analysis(a)
-                        call.respond(HttpStatusCode.OK, a)
+                        suricataLogAnalyzer.analyzeAndMakeADecision(call.receive<AlertRequest>())
+                        call.respond(HttpStatusCode.OK, "OK")
                     } catch (e: Exception) {
                         Miska.error(e.message ?: "analysis unknown error")
                         call.respond(HttpStatusCode.InternalServerError, e.message ?: "analysis unknown error")
@@ -45,6 +42,7 @@ class KtorServer {
 
         try {
             server?.start()
+            isRunning = true
         } catch (e: Exception) {
             Miska.error("Error when starting a server: ${e.message}")
             isRunning = false

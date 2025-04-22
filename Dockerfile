@@ -20,8 +20,8 @@ RUN apt-get install -y openjdk-21-jre
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # копируем и распаковываем рахив с приложением
-COPY ./build/libs/configs.zip .
-RUN unzip configs.zip -d .
+COPY ./build/libs/miska.zip .
+RUN unzip miska.zip -d .
 
 # запускаем приложенние
 # CMD ["java", "-jar", "Miska-0.0.1.jar"]

@@ -3,6 +3,10 @@ package com.miska.core.base.config
 import com.google.gson.annotations.SerializedName
 
 data class SuricataIpsConfig(
+    @SerializedName("rules_filename")
+    val rulesFilename: String = "rules.json",
+    @SerializedName("rules_filepath")
+    val rulesFilepath: String = "rules/",
     @SerializedName("address_list_name")
     val addressListName: String = "blocked-suricata",
     @SerializedName("repeat_threshold")

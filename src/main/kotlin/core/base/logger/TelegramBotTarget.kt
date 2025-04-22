@@ -4,6 +4,8 @@ import com.github.kotlintelegrambot.Bot
 import com.github.kotlintelegrambot.bot
 import com.github.kotlintelegrambot.dispatch
 import com.github.kotlintelegrambot.dispatcher.text
+import com.github.kotlintelegrambot.entities.ChatId
+import com.github.kotlintelegrambot.entities.ParseMode
 import com.miska.Miska
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -47,7 +49,7 @@ class TelegramBotTarget(override val levels: List<String>, override val categori
 
             dispatch {
                 text {
-                    bot.sendMessage(message.chat.id, "Идентификатор чата: ${message.chat.id}")
+                    bot.sendMessage(ChatId.fromId(message.chat.id), "Идентификатор чата: ${message.chat.id}")
                 }
             }
         }
@@ -61,7 +63,7 @@ class TelegramBotTarget(override val levels: List<String>, override val categori
 
         scope!!.launch {
             messageChannel!!.consumeEach { message ->
-                bot!!.sendMessage(chatId!!, message)
+                bot!!.sendMessage(ChatId.fromId(chatId!!), message, ParseMode.MARKDOWN_V2)
 
                 delay(messageInterval)
             }

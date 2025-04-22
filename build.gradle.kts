@@ -30,7 +30,7 @@ tasks.jar {
 }
 
 dependencies {
-    implementation("io.github.kotlin-telegram-bot.kotlin-telegram-bot:telegram:6.0.0")
+    implementation("io.github.kotlin-telegram-bot.kotlin-telegram-bot:telegram:6.2.0")
 
     /// ниже не трогать
     implementation("io.ktor:ktor-server-core:2.3.7")

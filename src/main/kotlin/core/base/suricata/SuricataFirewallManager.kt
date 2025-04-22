@@ -31,14 +31,14 @@ class SuricataFirewallManager {
         repeatRequestCount = config.repeatRequestCount
     }
 
-    suspend fun blockAddress(ipAddress: String, reason: String) {
+    suspend fun blockAddress(ipAddress: String, reason: String): Boolean {
         if (addAddressToAddressList(ipAddress, reason)) {
             manageSuricataFilterRules()
-        } else {
-            Miska.alert(
-                "$ipAddress address was not added to address list $addressListName", "suricata-alert"
-            )
+
+            return true
         }
+
+        return false
     }
 
     @Deprecated("The function is not mandatory for use")
@@ -47,10 +47,9 @@ class SuricataFirewallManager {
         val result = requestWithRepeat { repeatCount ->
             var success = true
 
-            Miska.info(
+            info(
                 "Checking the availability of address $ipAddress in the address list $addressListName. " +
                         "Attempt ${repeatCount + 1} of $repeatRequestCount.",
-                "suricata-info"
             )
 
             val response =
@@ -62,9 +61,7 @@ class SuricataFirewallManager {
                 success = addressesLists!!.isNotEmpty()
 
                 if (success) {
-                    Miska.info(
-                        "Address $ipAddress already exists in the address list $addressListName. Skip.", "suricata-info"
-                    )
+                    info("Address $ipAddress already exists in the address list $addressListName. Skip.")
                 }
             }
 
@@ -72,11 +69,7 @@ class SuricataFirewallManager {
                 val errorResponse =
                     gsonSerializer.fromJson(response.errorBody().toString(), ErrorResponse::class.java)
 
-                Miska.alert( //TODO: добавить категорию лога, иначе в большом потоке не будет понятно к чему эти логи
-                    "Request was unsuccessful: code: ${errorResponse.error}, message: ${errorResponse.message}, " +
-                            "detail: ${errorResponse.detail}",
-                    "suricata-alert"
-                )
+                alertUnsuccessfulRequest(errorResponse)
             }
 
             success
@@ -93,10 +86,9 @@ class SuricataFirewallManager {
         val result = requestWithRepeat { repeatCount ->
             var success = false
 
-            Miska.info(
+            info(
                 "An attempt to add $ipAddress to Address List $addressListName. " +
                         "Attempt ${repeatCount + 1} of $repeatRequestCount.",
-                "suricata-info"
             )
 
             val response = MikrotikApiService.getInstance().getAddressListsApi()
@@ -104,10 +96,7 @@ class SuricataFirewallManager {
                 .execute()
 
             if (response.isSuccessful && response.body() != null) {
-                Miska.alert(
-                    "$ipAddress address are successfully added to address list $addressListName. Reason: $reason",
-                    "suricata-alert"
-                )
+                info("$ipAddress address are successfully added to address list $addressListName. Reason: $reason")
 
                 success = true
             }
@@ -117,17 +106,9 @@ class SuricataFirewallManager {
                     gsonSerializer.fromJson(response.errorBody()!!.string(), ErrorResponse::class.java)
 
                 if (addressAlreadyExistsFromErrorResponse(errorResponse)) {
-                    Miska.info(
-                        "Address $ipAddress already exists in the address list $addressListName. Skip.", "suricata-info"
-                    )
-
-                    success = true
+                    info("Address $ipAddress already exists in the address list $addressListName. Skip.")
                 } else {
-                    Miska.alert( //TODO: добавить категорию лога, иначе в большом потоке не будет понятно к чему эти логи
-                        "Request was unsuccessful: code: ${errorResponse.error}, message: ${errorResponse.message}, " +
-                                "detail: ${errorResponse.detail}",
-                        "suricata-alert"
-                    )
+                    alertUnsuccessfulRequest(errorResponse)
                 }
             }
 
@@ -137,7 +118,7 @@ class SuricataFirewallManager {
         return result ?: false
     }
 
-    suspend fun addressAlreadyExistsFromErrorResponse(errorResponse: ErrorResponse): Boolean {
+    private suspend fun addressAlreadyExistsFromErrorResponse(errorResponse: ErrorResponse): Boolean {
         val expectedMessage = "Bad Request"
         val expectedStatus = 400
         val expectedDetail = "failure: already have such entry"
@@ -211,10 +192,9 @@ class SuricataFirewallManager {
         requestWithRepeat { repeatCount ->
             var result: FirewallFilterResponse? = null
 
-            Miska.info(
+            info(
                 "An attempt to check the availability of the Suricata filter rule for blocking. " +
-                        "Attempt ${repeatCount + 1} of $repeatRequestCount.",
-                "suricata-info"
+                        "Attempt ${repeatCount + 1} of $repeatRequestCount."
             )
 
             val response: Response<ArrayList<FirewallFilterResponse>> = block()
@@ -225,7 +205,7 @@ class SuricataFirewallManager {
                 if (filterRulesList!!.isNotEmpty()) {
                     result = filterRulesList.first()
 
-                    Miska.info("Suricata ${result.chain} filter rule was found id = \"${result.id}\"", "suricata-info")
+                    info("Suricata ${result.chain} filter rule was found id = \"${result.id}\"")
                 }
             }
 
@@ -233,11 +213,7 @@ class SuricataFirewallManager {
                 val errorResponse =
                     gsonSerializer.fromJson(response.errorBody().toString(), ErrorResponse::class.java)
 
-                Miska.alert(
-                    "Request was unsuccessful: code: ${errorResponse.error}, message: ${errorResponse.message}, " +
-                            "detail: ${errorResponse.detail}",
-                    "suricata-alert"
-                )
+                alertUnsuccessfulRequest(errorResponse)
             }
 
             result
@@ -247,10 +223,9 @@ class SuricataFirewallManager {
         val result = requestWithRepeat { repeatCount ->
             var success = false
 
-            Miska.info(
+            info(
                 "Trying to enable the Suricata filter rule for blocking id = ${rule.id}. " +
-                        "Attempt ${repeatCount + 1} of $repeatRequestCount.",
-                "suricata-info"
+                        "Attempt ${repeatCount + 1} of $repeatRequestCount."
             )
 
             val response = MikrotikApiService.getInstance().getFirewallFilterApi()
@@ -260,26 +235,17 @@ class SuricataFirewallManager {
                 )
                 .execute()
 
-            //TODO: необходимо обработать IOException при неверном адресе сервера
-
             if (response.isSuccessful && response.body() != null) {
                 success = true
 
-                Miska.info(
-                    "The rule of the Suricata id = ${rule.id} filter was turned on for blocking.",
-                    "suricata-info"
-                )
+                info("The rule of the Suricata id = ${rule.id} filter was turned on for blocking.")
             }
 
             if (response.errorBody() != null) {
                 val errorResponse =
                     gsonSerializer.fromJson(response.errorBody().toString(), ErrorResponse::class.java)
 
-                Miska.alert( //TODO: добавить категорию лога, иначе в большом потоке не будет понятно к чему эти логи
-                    "Request was unsuccessful: code: ${errorResponse.error}, message: ${errorResponse.message}, " +
-                            "detail: ${errorResponse.detail}",
-                    "suricata-alert"
-                )
+                alertUnsuccessfulRequest(errorResponse)
             }
 
             success
@@ -296,10 +262,9 @@ class SuricataFirewallManager {
         val result = requestWithRepeat { repeatCount ->
             var success = false
 
-            Miska.info(
+            info(
                 "An attempt to create a Suricata filter rule for blocking. " +
-                        "Attempt ${repeatCount + 1} of $repeatRequestCount.",
-                "suricata-info"
+                        "Attempt ${repeatCount + 1} of $repeatRequestCount."
             )
 
             val response = MikrotikApiService.getInstance().getFirewallFilterApi().add(payload).execute()
@@ -307,21 +272,15 @@ class SuricataFirewallManager {
             if (response.isSuccessful && response.body() != null) {
                 val filterRule = response.body()
                 success = true
-                Miska.info(
-                    "Suricata filter rule for blocking was created id = \"${filterRule!!.id}\"",
-                    "suricata-info"
-                )
+
+                info("Suricata filter rule for blocking was created id = \"${filterRule!!.id}\"")
             }
 
             if (response.errorBody() != null) {
                 val errorResponse =
                     gsonSerializer.fromJson(response.errorBody().toString(), ErrorResponse::class.java)
 
-                Miska.alert( //TODO: добавить категорию лога, иначе в большом потоке не будет понятно к чему эти логи
-                    "Request was unsuccessful: code: ${errorResponse.error}, message: ${errorResponse.message}, " +
-                            "detail: ${errorResponse.detail}",
-                    "suricata-alert"
-                )
+                alertUnsuccessfulRequest(errorResponse)
             }
 
             success
@@ -341,7 +300,7 @@ class SuricataFirewallManager {
             try {
                 return request(repeatCount)
             } catch (connectionException: ConnectException) {
-                Miska.alert("Connection error: " + (connectionException.message ?: "unknown error."), "suricata-alert")
+                alert("Connection error: " + (connectionException.message ?: "unknown error."))
 
                 if (++repeatCount != repeatRequestCount) {
                     delay(repeatThreshold)
@@ -350,5 +309,16 @@ class SuricataFirewallManager {
         }
 
         return null
+    }
+
+    private fun alertUnsuccessfulRequest(errorResponse: ErrorResponse) {
+        alert(
+            """
+            Request was unsuccessful.
+            - Code: ${errorResponse.error}.
+            - Message: ${errorResponse.message}, " +
+            - Detail: ${errorResponse.detail}
+            """
+        )
     }
 }
