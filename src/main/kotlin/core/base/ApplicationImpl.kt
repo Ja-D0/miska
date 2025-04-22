@@ -15,8 +15,11 @@ import com.miska.core.base.interfaces.Configurable
 import com.miska.core.base.logger.DispatcherImpl
 import com.miska.core.base.logger.FileTarget
 import com.miska.core.commandLists.RootCommandsList
+import com.miska.core.server.KtorServer
 import java.io.FileNotFoundException
+import kotlin.properties.Delegates
 import kotlin.reflect.full.findAnnotation
+import kotlin.system.exitProcess
 import com.miska.core.base.cli.Response as ResponseImpl
 
 /**
@@ -32,9 +35,12 @@ abstract class ApplicationImpl(configFilePath: String? = null) : Application, Co
     private val inlineCommandsList: CommandsList = InlineCommandsList()
     private var currentPath: String
 
+    private var server by Delegates.notNull<KtorServer>()
+
     init {
         loadConfig(configFilePath)
         initLogger(config)
+
         currentPath = getCommandsListPath(getCurrentCommandsList())
     }
 
@@ -84,7 +90,7 @@ abstract class ApplicationImpl(configFilePath: String? = null) : Application, Co
             }
         } catch (e: Exception) {
             cliOut(e.message ?: "Unknown error")
-            System.exit(1)
+            exitProcess(1)
         }
     }
 
@@ -128,10 +134,10 @@ abstract class ApplicationImpl(configFilePath: String? = null) : Application, Co
             config = ConfigLoader().load(configFilePath)
         } catch (exception: FileNotFoundException) {
             cliOut(exception.message ?: "Config file not found")
-            System.exit(1)
+            exitProcess(1)
         } catch (applicationException: ApplicationException) {
             cliOut(applicationException.message)
-            System.exit(1)
+            exitProcess(1)
         }
     }
 
@@ -271,6 +277,55 @@ abstract class ApplicationImpl(configFilePath: String? = null) : Application, Co
     override fun start() {
         isRunning = true
         Miska.app = this
+
+        autoRunAnalyzeAlertServer()
+    }
+
+    //TODO: Добавить поведение с событиями и состояниями приложения
+    private fun autoRunAnalyzeAlertServer() {
+        server = KtorServer()
+        if (config.suricataIps.autoStartServer) {
+            cliOut(startAnalyzeAlertServer())
+        }
+    }
+
+
+    /**
+     * Запускает Ktor сервер для приёма и обработки Alert
+     *
+     * @see [stopAnalyzeAlertServer]
+     * @author Денис Чемерис
+     * @since 0.0.1
+     */
+    fun startAnalyzeAlertServer(): String {
+        if (server.isRunning()) {
+            return "REST API server is already running"
+        }
+
+        return if (server.start()) {
+            "REST API Server is successfully launched"
+        } else {
+            "It was not possible to start REST API Server"
+        }
+    }
+
+
+    /**
+     * Останавливает Ktor сервер
+     *
+     * @see [startAnalyzeAlertServer]
+     * @author Денис Чемерис
+     * @since 0.0.1
+     */
+    fun stopAnalyzeAlertServer(): String {
+        if (!server.isRunning()) {
+            return "REST API server is already stopped"
+        }
+        return if (server.stop()) {
+            "REST API server has been successfully stopped"
+        } else {
+            "It was not possible to stop the REST API server"
+        }
     }
 
     /**
@@ -282,6 +337,10 @@ abstract class ApplicationImpl(configFilePath: String? = null) : Application, Co
      */
     override fun stop(): Unit {
         isRunning = false
+
+        stopAnalyzeAlertServer()
+
+        exitProcess(0)
     }
 
     /**

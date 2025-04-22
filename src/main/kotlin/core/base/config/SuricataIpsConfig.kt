@@ -3,6 +3,8 @@ package com.miska.core.base.config
 import com.google.gson.annotations.SerializedName
 
 data class SuricataIpsConfig(
+    @SerializedName("auto_start_server")
+    val autoStartServer: Boolean = false,
     @SerializedName("rules_filename")
     val rulesFilename: String = "rules.json",
     @SerializedName("rules_filepath")

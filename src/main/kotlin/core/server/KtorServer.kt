@@ -14,7 +14,7 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 
 class KtorServer {
-    private var server: ApplicationEngine? = null
+    private var ktor: ApplicationEngine? = null
     private var isRunning = false
     private val suricataLogAnalyzer = SuricataLogAnalyzer()
 
@@ -23,7 +23,7 @@ class KtorServer {
             return false
         }
 
-        server = embeddedServer(Netty, port = 8080) {
+        ktor = embeddedServer(Netty, port = 8080) {
             install(ContentNegotiation) {
                 gson()
             }
@@ -41,14 +41,16 @@ class KtorServer {
         }
 
         try {
-            server?.start()
+            ktor!!.start()
             isRunning = true
+
+            Miska.info("REST API Server is successfully launched")
         } catch (e: Exception) {
             Miska.error("Error when starting a server: ${e.message}")
             isRunning = false
         }
 
-        return true
+        return isRunning
     }
 
     fun stop(): Boolean {
@@ -56,9 +58,13 @@ class KtorServer {
             return false
         }
 
-        server?.stop(gracePeriodMillis = 1000, timeoutMillis = 3000)
+        ktor?.stop(gracePeriodMillis = 1000, timeoutMillis = 3000)
         isRunning = false
+
+        Miska.info("REST API Server is successfully stopped")
 
         return true
     }
+
+    fun isRunning(): Boolean = isRunning
 }
