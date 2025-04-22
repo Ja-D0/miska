@@ -13,5 +13,4 @@ data class AlertRequest(
     val severity: Int,
     val signature: String,
     val category: String,
-    val payload: String
 )

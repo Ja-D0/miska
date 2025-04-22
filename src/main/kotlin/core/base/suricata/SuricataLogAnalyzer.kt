@@ -54,7 +54,6 @@ class SuricataLogAnalyzer {
                         *Signature:* `${verdict.alert.signature}`
                         *Category:* `${verdict.alert.category}`
                         *Severity:* `${verdict.alert.severity}`
-                        *Payload:* ```0J/RgNC40LLQtdGCINC+0YIgTWlza2E=```
                         """
                     )
                 }
@@ -69,7 +68,6 @@ class SuricataLogAnalyzer {
                     *Signature:* `${verdict.alert.signature}`
                     *Category:* `${verdict.alert.category}`
                     *Severity:* `${verdict.alert.severity}`
-                    *Payload:* ```0J/RgNC40LLQtdGCINC+0YIgTWlza2E=```
                 """
             )
         }
