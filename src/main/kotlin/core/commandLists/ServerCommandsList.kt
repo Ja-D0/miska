@@ -21,4 +21,11 @@ class ServerCommandsList : CommandsListImpl() {
         "Stop the REST API server for analyze alerts"
     )
     fun commandStopAnalyzeAlertApi(): String = Miska.app.stopAnalyzeAlertServer()
+
+    @Command(
+        "reload-rules",
+        CommandType.COMMAND,
+        "Reloads a set of rules for comparison"
+    )
+    fun commandReloadRules() = Miska.app.reloadRulesForAnalyzeAlerts()
 }

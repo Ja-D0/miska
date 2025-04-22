@@ -10,6 +10,7 @@ import com.miska.core.base.cli.exceptions.ApplicationException
 import com.miska.core.base.cli.exceptions.CommandsListNotFoundException
 import com.miska.core.base.cli.interfaces.CommandsList
 import com.miska.core.base.cli.interfaces.Response
+import com.miska.core.base.config.SuricataIpsConfig
 import com.miska.core.base.interfaces.Application
 import com.miska.core.base.interfaces.Configurable
 import com.miska.core.base.logger.DispatcherImpl
@@ -282,8 +283,17 @@ abstract class ApplicationImpl(configFilePath: String? = null) : Application, Co
     }
 
     //TODO: Добавить поведение с событиями и состояниями приложения
+
+    /**
+     * Автоматически запускает Ktor сервер при запуске приложения, если есть для этого основания
+     *
+     * @see [SuricataIpsConfig.autoStartServer]
+     * @author Денис Чемерис
+     * @since 0.0.1
+     */
     private fun autoRunAnalyzeAlertServer() {
         server = KtorServer()
+
         if (config.suricataIps.autoStartServer) {
             cliOut(startAnalyzeAlertServer())
         }
@@ -326,6 +336,23 @@ abstract class ApplicationImpl(configFilePath: String? = null) : Application, Co
         } else {
             "It was not possible to stop the REST API server"
         }
+    }
+
+    /**
+     * Перезагружает правила для анализа Alerts и сервер Ktor
+     *
+     * @author Денис Чемерис
+     * @since 0.0.1
+     */
+    fun reloadRulesForAnalyzeAlerts(): String {
+        if (server.isRunning()) {
+            stopAnalyzeAlertServer()
+            startAnalyzeAlertServer()
+
+            return "Rules reloaded"
+        }
+
+        return "REST API Server is not launched"
     }
 
     /**
