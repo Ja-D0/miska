@@ -6,6 +6,7 @@ data class Rule(
     val name: String = "Unknown name",
     val action: String = "skip",
     val target: String? = null,
+    val timeout: Long? = null,
     @SerializedName("signatures_matches")
     val signaturesMatches: Set<String> = emptySet(),
     @SerializedName("categories_matches")

@@ -31,8 +31,8 @@ class SuricataFirewallManager {
         repeatRequestCount = config.repeatRequestCount
     }
 
-    suspend fun blockAddress(ipAddress: String, reason: String): Boolean {
-        if (addAddressToAddressList(ipAddress, reason)) {
+    suspend fun blockAddress(ipAddress: String, reason: String, timeout: Long?): Boolean {
+        if (addAddressToAddressList(ipAddress, reason, timeout)) {
             manageSuricataFilterRules()
 
             return true
@@ -82,7 +82,7 @@ class SuricataFirewallManager {
         return result
     }
 
-    private suspend fun addAddressToAddressList(ipAddress: String, reason: String): Boolean {
+    private suspend fun addAddressToAddressList(ipAddress: String, reason: String, timeout: Long?): Boolean {
         val result = requestWithRepeat { repeatCount ->
             var success = false
 
@@ -92,7 +92,14 @@ class SuricataFirewallManager {
             )
 
             val response = MikrotikApiService.getInstance().getAddressListsApi()
-                .add(AddressListPayload(addressListName, ipAddress, comment = "Added by Miska. Reason: $reason"))
+                .add(
+                    AddressListPayload(
+                        addressListName,
+                        ipAddress,
+                        timeout = timeout?.toString(),
+                        comment = "Added by Miska. Reason: $reason"
+                    )
+                )
                 .execute()
 
             if (response.isSuccessful && response.body() != null) {

@@ -41,8 +41,9 @@ class SuricataLogAnalyzer {
             val decisionRules = verdict.decisionRules
 
             verdict.targets!!.forEach { targetIp ->
-                if (suricataFirewallManager.blockAddress(targetIp, verdict.alert.signature)) {
-                    val decisionRule = decisionRules!!.removeFirst().second
+                val decisionRule = decisionRules!!.removeFirst().second
+
+                if (suricataFirewallManager.blockAddress(targetIp, verdict.alert.signature, decisionRule.timeout)) {
 
                     alert(
                         """
