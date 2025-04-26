@@ -47,7 +47,8 @@ class FileTarget(
     @Synchronized
     override fun collect(message: Message) {
         try {
-            val logEntry = "[${message.time}][${message.category}][${message.level.uppercase()}] ${message.message}\n"
+            val logEntry =
+                "[${message.time}][${message.category}][${message.level.uppercase()}][${Thread.currentThread().name}] ${message.message}\n"
             FileWriter(file, true).use { writer -> writer.write(logEntry) }
         } catch (e: IOException) {
             Miska.error("There was an error when writing to a file ${file.absoluteFile}")

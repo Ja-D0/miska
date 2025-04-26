@@ -30,7 +30,8 @@ class KtorServer {
             routing {
                 post("/analyze") {
                     try {
-                        suricataLogAnalyzer.analyzeAndMakeADecision(call.receive<AlertRequest>())
+                        val log = call.receive<AlertRequest>()
+                        suricataLogAnalyzer.analyzeAndMakeADecision(log)
                         call.respond(HttpStatusCode.OK, "OK")
                     } catch (e: Exception) {
                         Miska.error(e.message ?: "analysis unknown error")

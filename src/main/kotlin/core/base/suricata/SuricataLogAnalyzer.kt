@@ -27,6 +27,8 @@ class SuricataLogAnalyzer {
             return
         }
 
+        info("Alert processing with hashcode - ${alert.hashCode()}")
+
         scope.launch {
             val verdict = analyze(alert)
 
@@ -52,6 +54,9 @@ class SuricataLogAnalyzer {
                         *Timeout:* `${decisionRule.timeout.toDate()}`
                         *Date of detection:* `${verdict.alert.timestamp}`
                         *Signature:* `${verdict.alert.signature}`
+                        *Signature ID:* `${verdict.alert.signatureId}`
+                        *Source IP:* `${verdict.alert.srcIp}`
+                        *Destination IP:* `${verdict.alert.destIp}`
                         *Category:* `${verdict.alert.category}`
                         *Severity:* `${verdict.alert.severity}`
                         """
@@ -66,6 +71,9 @@ class SuricataLogAnalyzer {
                     *Verdict:* `a notification analysis is required`
                     *Date of detection:* `${verdict.alert.timestamp}`
                     *Signature:* `${verdict.alert.signature}`
+                    *Signature ID:* `${verdict.alert.signatureId}`
+                    *Source IP:* `${verdict.alert.srcIp}`
+                    *Destination IP:* `${verdict.alert.destIp}`
                     *Category:* `${verdict.alert.category}`
                     *Severity:* `${verdict.alert.severity}`
                 """
@@ -108,7 +116,7 @@ class SuricataLogAnalyzer {
 
             if (skipRules.isNotEmpty()) {
                 verdict.decisionRules = listOf(Pair("stub", skipRules.first()))
-            } else if (alert.severity in 1..2) {
+            } else if (alert.severity in 1..3) {
                 verdict.action = "alert"
             }
         }

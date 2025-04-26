@@ -13,4 +13,13 @@ data class AlertRequest(
     val severity: Int,
     val signature: String,
     val category: String,
-)
+) {
+    override fun hashCode(): Int {
+        return srcIp.hashCode() * 31 +
+                destIp.hashCode() * 31 +
+                signatureId.hashCode() * 31 +
+                severity.hashCode() * 31 +
+                signature.hashCode() * 31 +
+                category.hashCode() // Исключаем timestamp
+    }
+}

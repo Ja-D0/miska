@@ -7,8 +7,8 @@ import com.miska.core.api.endpoints.AddressListsApi
 import com.miska.core.api.endpoints.FirewallFilterApi
 import com.miska.core.api.exceptions.FailedRequestException
 import com.miska.core.api.responseModels.ErrorResponse
+import com.miska.core.base.logger.FullHttpLoggingInterceptor
 import okhttp3.OkHttpClient
-import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -66,8 +66,8 @@ class MikrotikApiService private constructor() {
             }
 
         if (Miska.app.getConfig().logsConfig.httpLogsConfig.path.isNotBlank()) {
-            builder.addInterceptor(HttpLoggingInterceptor { message -> Miska.http(message) }.apply {
-                level = HttpLoggingInterceptor.Level.BODY
+            builder.addInterceptor(FullHttpLoggingInterceptor { message -> Miska.http(message) }.apply {
+                level = FullHttpLoggingInterceptor.Level.BODY
             })
         }
 
