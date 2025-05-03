@@ -9,7 +9,9 @@ data class LogsConfig(
     @SerializedName("app")
     val appLogsConfig: AppLogsConfig = AppLogsConfig(),
     @SerializedName("alert")
-    val alertLogsConfig: AlertLogsConfig = AlertLogsConfig()
+    val alertLogsConfig: AlertLogsConfig = AlertLogsConfig(),
+    @SerializedName("ips")
+    val ipsLogsConfig: IpsLogsConfig = IpsLogsConfig(),
 ) : AbstractConfig() {
 
     override fun toString(): String {

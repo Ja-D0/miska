@@ -11,8 +11,10 @@ import com.miska.core.base.cli.exceptions.CommandsListNotFoundException
 import com.miska.core.base.cli.interfaces.CommandsList
 import com.miska.core.base.cli.interfaces.Response
 import com.miska.core.base.config.SuricataIpsConfig
+import com.miska.core.base.config.logs.AbstractLogsConfig
 import com.miska.core.base.interfaces.Application
 import com.miska.core.base.interfaces.Configurable
+import com.miska.core.base.logger.Dispatcher
 import com.miska.core.base.logger.DispatcherImpl
 import com.miska.core.base.logger.FileTarget
 import com.miska.core.base.logger.TelegramBotTarget
@@ -50,48 +52,19 @@ abstract class ApplicationImpl(configFilePath: String? = null) : Application, Co
         val dispatcher = DispatcherImpl()
         try {
             dispatcher.apply {
-                registerTarget {
-                    FileTarget(
-                        config.logsConfig.appLogsConfig.filename,
-                        config.logsConfig.appLogsConfig.path,
-                        listOf("*"),
-                        listOf("*")
-                    )
-                }
+                registerLogFromConfig(config.logsConfig.appLogsConfig)
+                registerLogFromConfig(config.logsConfig.alertLogsConfig)
+                registerLogFromConfig(config.logsConfig.ipsLogsConfig)
+                registerLogFromConfig(config.logsConfig.httpLogsConfig)
 
-                registerTarget {
-                    FileTarget(
-                        config.logsConfig.alertLogsConfig.filename,
-                        config.logsConfig.alertLogsConfig.path,
-                        listOf("alert"),
-                        listOf("suricata-alert")
-                    )
-                }
-
-                registerTarget {
-                    FileTarget(
-                        "suricata-ips-info.log",
-                        "logs/",
-                        listOf("info", "alert"),
-                        listOf("suricata-info", "suricata-alert")
-                    )
-                }
-
-                registerTarget {
-                    FileTarget(
-                        config.logsConfig.httpLogsConfig.filename,
-                        config.logsConfig.httpLogsConfig.path,
-                        listOf("http"),
-                        listOf("*")
-                    )
-                }
-
-                registerTarget {
-                    TelegramBotTarget(
-                        config.logsConfig.alertLogsConfig.telegramBotConfig,
-                        listOf("alert"),
-                        listOf("suricata-alert")
-                    )
+                if (config.logsConfig.alertLogsConfig.telegramBotConfig.token.isNotEmpty()) {
+                    registerTarget {
+                        TelegramBotTarget(
+                            config.logsConfig.alertLogsConfig.telegramBotConfig,
+                            listOf("alert"),
+                            listOf("ips-alert")
+                        )
+                    }
                 }
 
                 setLogger {
@@ -101,6 +74,12 @@ abstract class ApplicationImpl(configFilePath: String? = null) : Application, Co
         } catch (e: Exception) {
             cliOut(e.message ?: "Unknown error")
             exitProcess(1)
+        }
+    }
+
+    private fun Dispatcher.registerLogFromConfig(config: AbstractLogsConfig) {
+        if (config.enable) {
+            registerTarget { FileTarget(config.filename, config.path, config.levels, config.categories) }
         }
     }
 

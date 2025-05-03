@@ -1,11 +1,9 @@
 package com.miska.core.base.config.logs
 
-import com.google.gson.annotations.SerializedName
-import com.miska.core.base.config.AbstractConfig
-
 data class AppLogsConfig(
-    @SerializedName("path")
-    val path: String = "logs/",
-    @SerializedName("filename")
-    val filename: String = "app.log"
-) : AbstractConfig()
+    override val enable: Boolean = true,
+    override val path: String = "logs/",
+    override val filename: String = "app.log",
+    override val levels: List<String> = listOf("*"),
+    override val categories: List<String> = listOf("*"),
+) : AbstractLogsConfig()

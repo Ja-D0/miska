@@ -155,5 +155,4 @@ class SuricataLogAnalyzer {
     }
 
     fun reloadRules() = parseRules()
-
 }

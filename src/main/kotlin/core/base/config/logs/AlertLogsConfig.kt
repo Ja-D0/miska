@@ -1,13 +1,13 @@
 package com.miska.core.base.config.logs
 
 import com.google.gson.annotations.SerializedName
-import com.miska.core.base.config.AbstractConfig
 
 data class AlertLogsConfig(
-    @SerializedName("path")
-    val path: String = "logs/",
-    @SerializedName("filename")
-    val filename: String = "alert.log",
+    override val enable: Boolean = false,
+    override val path: String = "logs/",
+    override val filename: String = "ips-alert.log",
+    override val levels: List<String> = listOf("alert"),
+    override val categories: List<String> = listOf("ips-alert"),
     @SerializedName("telegram_bot")
     val telegramBotConfig: TelegramBotConfig = TelegramBotConfig()
-) : AbstractConfig()
+) : AbstractLogsConfig()

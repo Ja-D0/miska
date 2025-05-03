@@ -2,11 +2,11 @@ package com.miska.core.base.suricata
 
 import com.miska.Miska
 
-fun Any.info(message: String) = Miska.info(message, "suricata-info")
+fun Any.info(message: String) = Miska.info(message, "ips-info")
 
-fun Any.error(message: String) = Miska.error(message, "suricata-info")
+fun Any.error(message: String) = Miska.error(message, "ips-info")
 
-fun Any.alert(message: String) = Miska.alert(message.trimIndent(), "suricata-alert")
+fun Any.alert(message: String) = Miska.alert(message.trimIndent(), "ips-alert")
 
 fun Long?.toDate(): String? {
     if (this == null) return null
