@@ -2,7 +2,7 @@ package com.miska.core.base.config
 
 import com.google.gson.annotations.SerializedName
 
-data class SuricataIpsConfig(
+data class IpsConfig(
     @SerializedName("auto_start_server")
     val autoStartServer: Boolean = false,
     @SerializedName("rules_filename")

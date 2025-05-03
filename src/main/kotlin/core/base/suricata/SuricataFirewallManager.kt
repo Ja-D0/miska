@@ -23,7 +23,7 @@ class SuricataFirewallManager {
     private val mutex = Mutex()
 
     init {
-        val config = Miska.app.getConfig().suricataIps
+        val config = Miska.app.getConfig().ipsConfig
 
         addressListName = config.addressListName
         mikrotikInInterface = config.mikrotikInInterface

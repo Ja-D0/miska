@@ -10,7 +10,7 @@ import com.miska.core.base.cli.exceptions.ApplicationException
 import com.miska.core.base.cli.exceptions.CommandsListNotFoundException
 import com.miska.core.base.cli.interfaces.CommandsList
 import com.miska.core.base.cli.interfaces.Response
-import com.miska.core.base.config.SuricataIpsConfig
+import com.miska.core.base.config.IpsConfig
 import com.miska.core.base.config.logs.AbstractLogsConfig
 import com.miska.core.base.interfaces.Application
 import com.miska.core.base.interfaces.Configurable
@@ -275,14 +275,14 @@ abstract class ApplicationImpl(configFilePath: String? = null) : Application, Co
     /**
      * Автоматически запускает Ktor сервер при запуске приложения, если есть для этого основания
      *
-     * @see [SuricataIpsConfig.autoStartServer]
+     * @see [IpsConfig.autoStartServer]
      * @author Денис Чемерис
      * @since 0.0.1
      */
     private fun autoRunAnalyzeAlertServer() {
         server = KtorServer()
 
-        if (config.suricataIps.autoStartServer) {
+        if (config.ipsConfig.autoStartServer) {
             cliOut(startAnalyzeAlertServer())
         }
     }

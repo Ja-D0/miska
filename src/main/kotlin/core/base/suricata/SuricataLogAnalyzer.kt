@@ -131,8 +131,8 @@ class SuricataLogAnalyzer {
     }.toSet()
 
     private fun parseRules() {
-        val filePath = Miska.app.getConfig().suricataIps.rulesFilepath
-        val filename = Miska.app.getConfig().suricataIps.rulesFilename
+        val filePath = Miska.app.getConfig().ipsConfig.rulesFilepath
+        val filename = Miska.app.getConfig().ipsConfig.rulesFilename
         val dir = Miska.getBaseJarDir()
 
         val rulesFile = File(dir + File.separator + filePath + filename)
