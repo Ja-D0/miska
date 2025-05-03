@@ -1,0 +1,72 @@
+{
+  "mikrotik": {
+    "server": {
+      "host": "localhost",
+      "port": 80,
+      "login": "login",
+      "password": "password"
+    }
+  },
+  "logs": {
+    "alert": {
+      "enable": true,
+      "filename": "alert.log",
+      "path": "logs/",
+      "levels": [
+        "alert"
+      ],
+      "categories": [
+        "ips-alert"
+      ],
+      "telegram_bot": {
+        "chatId": -123,
+        "token": "token",
+        "message_interval": 3000
+      }
+    },
+    "app": {
+      "enable": true,
+      "filename": "app.log",
+      "path": "logs/",
+      "levels": [
+        "*"
+      ],
+      "categories": [
+        "*"
+      ]
+    },
+    "http": {
+      "enable": true,
+      "filename": "http.log",
+      "path": "logs/",
+      "levels": [
+        "http"
+      ],
+      "categories": [
+        "*"
+      ]
+    },
+    "ips": {
+      "enable": true,
+      "filename": "ips.log",
+      "path": "logs/",
+      "levels": [
+        "info",
+        "alert"
+      ],
+      "categories": [
+        "ips-info",
+        "ips-alert"
+      ]
+    }
+  },
+  "ips": {
+    "auto_start_server": true,
+    "address_list_name": "blocked-miska",
+    "mikrotik_in_interface": "ether1",
+    "repeat_request_count": 5,
+    "repeat_threshold": 5000,
+    "rules_filename": "rules.json",
+    "rules_filepath": "rules/"
+  }
+}
