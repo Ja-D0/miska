@@ -1,4 +1,4 @@
-package com.miska.core.base.suricata
+package com.miska.core.base.ips
 
 import com.google.gson.Gson
 import com.google.gson.JsonSyntaxException
@@ -6,35 +6,53 @@ import com.miska.Miska
 import com.miska.core.server.AlertRequest
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.channels.consumeEach
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.io.File
 import java.util.concurrent.ConcurrentHashMap
 
-class SuricataLogAnalyzer {
-    private val scope = CoroutineScope(Dispatchers.IO)
+class IpsLogAnalyzer {
+    private val scope = CoroutineScope(Dispatchers.Default)
+    private var channelScope: CoroutineScope? = null
     private val processingAddresses = ConcurrentHashMap<Int, String>()
     private var rules: Set<Rule> = emptySet()
-    private val suricataFirewallManager = SuricataFirewallManager()
+    private val ipsFirewallManager = IpsFirewallManager()
+    private val verdictsChannel: Channel<Verdict> = Channel(Channel.UNLIMITED)
 
     init {
         parseRules()
+        initMakeADecisionCore()
     }
 
-    suspend fun analyzeAndMakeADecision(alert: AlertRequest) {
+    suspend fun analyzeAlert(alert: AlertRequest) {
         if (processingAddresses.putIfAbsent(alert.hashCode(), alert.signature) != null) {
             info("${alert.srcIp} is already being processed.")
 
             return
         }
 
-        info("Alert processing with hashcode - ${alert.hashCode()}")
-
         scope.launch {
-            val verdict = analyze(alert)
+            val verdict = analyze(alert) //тут просто сопоставление с массивами
 
-            makeADecision(verdict)
+            if (verdict.action != "skip") {
+                verdictsChannel.trySend(verdict)
+            }
+        }
+    }
 
-            processingAddresses.remove(alert.hashCode())
+    private fun initMakeADecisionCore() {
+        channelScope = CoroutineScope(Dispatchers.IO)
+
+        channelScope!!.launch {
+            verdictsChannel.consumeEach { verdict ->
+                makeADecision(verdict)
+
+                processingAddresses.remove(verdict.alert.hashCode())
+
+                delay(200)
+            }
         }
     }
 
@@ -45,7 +63,7 @@ class SuricataLogAnalyzer {
             verdict.targets!!.forEach { targetIp ->
                 val decisionRule = decisionRules!!.removeFirst().second
 
-                if (suricataFirewallManager.blockAddress(targetIp, verdict.alert.signature, decisionRule.timeout)) {
+                if (ipsFirewallManager.blockAddress(targetIp, verdict.alert.signature, decisionRule.timeout)) {
 
                     alert(
                         """

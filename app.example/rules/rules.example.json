@@ -6,31 +6,41 @@
       "target": "src",
       "signatures_matches": [],
       "categories_matches": [],
-      "signatures_ids": [2100498]
+      "signatures_ids": [
+        2100498
+      ]
     },
     {
       "name": "Blocking SURICATA STREAM 3way handshake SYN resend different seq on SYN recv",
       "action": "block",
       "target": "src",
-      "signatures_ids": [2210008]
+      "signatures_ids": [
+        2210008
+      ]
     },
     {
       "name": "Blocking SURICATA STREAM 3way handshake SYNACK resend with different ack",
       "action": "block",
       "target": "dst",
-      "signatures_ids": [2210004]
+      "signatures_ids": [
+        2210004
+      ]
     },
     {
       "name": "Blocking SURICATA STREAM 3way handshake SYNACK with wrong ack",
       "action": "block",
       "target": "dst",
-      "signatures_ids": [2210007]
+      "signatures_ids": [
+        2210007
+      ]
     },
     {
       "name": "Blocking ET DROP Spamhaus DROP",
       "action": "block",
-      "target": "dst",
-      "signatures_matches": ["ET DROP Spamhaus DROP"]
+      "target": "src",
+      "signatures_matches": [
+        "ET DROP Spamhaus DROP"
+      ]
     }
   ]
 }

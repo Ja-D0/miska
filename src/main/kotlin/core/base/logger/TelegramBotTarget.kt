@@ -48,7 +48,7 @@ class TelegramBotTarget(
 
     private fun initBot() {
         bot = bot {
-            token = "7939012541:AAGjSl4PseCBRujmjg--BfLTco5LduYnTN0"
+            token = this@TelegramBotTarget.token
 
             dispatch {
                 text {

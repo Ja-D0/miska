@@ -1,9 +1,8 @@
-package com.miska.core.base
+package com.miska.core.base.config
 
 import com.google.gson.Gson
 import com.google.gson.JsonSyntaxException
 import com.miska.Miska
-import com.miska.core.base.config.AbstractConfigLoader
 import com.miska.core.base.config.exceptions.ConfigFileNotFoundException
 import com.miska.core.base.config.exceptions.ConfigSyntaxException
 import com.miska.core.base.config.exceptions.LoadConfigException

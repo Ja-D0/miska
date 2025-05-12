@@ -3,9 +3,6 @@ package com.miska.core.base
 import com.miska.core.base.cli.interfaces.Request
 import com.miska.core.base.cli.interfaces.Response
 
-/**
- *
- */
 class Application(configFilePath: String? = null) : ApplicationImpl(configFilePath) {
 
     /**

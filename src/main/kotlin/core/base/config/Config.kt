@@ -1,8 +1,7 @@
-package com.miska.core.base
+package com.miska.core.base.config
 
 import com.google.gson.annotations.SerializedName
-import com.miska.core.base.config.AbstractConfig
-import com.miska.core.base.config.IpsConfig
+import com.miska.core.base.config.ips.IpsConfig
 import com.miska.core.base.config.logs.LogsConfig
 import com.miska.core.base.config.mikrotik.MikrotikApiConfig
 
@@ -13,9 +12,6 @@ data class Config(
     val ipsConfig: IpsConfig = IpsConfig(),
     @SerializedName("logs")
     val logsConfig: LogsConfig = LogsConfig(),
-) : AbstractConfig() {
+) : AbstractConfig()
 
-    override fun toString(): String {
-        return super.toString()
-    }
-}
+

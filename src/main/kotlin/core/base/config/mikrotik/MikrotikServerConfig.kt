@@ -7,9 +7,4 @@ data class MikrotikServerConfig(
     val port: Int = 80,
     val login: String = "admin",
     val password: String = ""
-) : AbstractConfig() {
-
-    override fun toString(): String {
-        return super.toString()
-    }
-}
+) : AbstractConfig()

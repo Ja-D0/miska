@@ -1,4 +1,4 @@
-package com.miska.core.base.suricata
+package com.miska.core.base.ips
 
 import com.google.gson.Gson
 import com.miska.Miska
@@ -13,7 +13,7 @@ import kotlinx.coroutines.sync.withLock
 import retrofit2.Response
 import java.net.ConnectException
 
-class SuricataFirewallManager {
+class IpsFirewallManager {
     private val addressListName: String
     private val mikrotikInInterface: String
     private val repeatThreshold: Long
@@ -149,7 +149,7 @@ class SuricataFirewallManager {
                     srcAddressList = addressListName,
                     inInterface = mikrotikInInterface,
                     log = true,
-                    logPrefix = "suricata-input-rule",
+                    logPrefix = "ips-input-rule",
                     comment = "Created by Miska."
                 ),
                 FirewallFilterPayload(
@@ -157,7 +157,7 @@ class SuricataFirewallManager {
                     "forward",
                     srcAddressList = addressListName,
                     log = true,
-                    logPrefix = "suricata-forward-src-rule",
+                    logPrefix = "ips-forward-src-rule",
                     comment = "Created by Miska."
                 ),
                 FirewallFilterPayload(
@@ -165,7 +165,7 @@ class SuricataFirewallManager {
                     "forward",
                     dstAddressList = addressListName,
                     log = true,
-                    logPrefix = "suricata-forward-dst-rule",
+                    logPrefix = "ips-forward-dst-rule",
                     comment = "Created by Miska."
                 )
             )

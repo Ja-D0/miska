@@ -2,7 +2,7 @@ package com.miska.core.server
 
 
 import com.miska.Miska
-import com.miska.core.base.suricata.SuricataLogAnalyzer
+import com.miska.core.base.ips.IpsLogAnalyzer
 import io.ktor.http.*
 import io.ktor.serialization.gson.*
 import io.ktor.server.application.*
@@ -16,7 +16,7 @@ import io.ktor.server.routing.*
 class KtorServer {
     private var ktor: ApplicationEngine? = null
     private var isRunning = false
-    private val suricataLogAnalyzer = SuricataLogAnalyzer()
+    private val ipsLogAnalyzer = IpsLogAnalyzer()
 
     fun start(): Boolean {
         if (isRunning) {
@@ -31,7 +31,7 @@ class KtorServer {
                 post("/analyze") {
                     try {
                         val log = call.receive<AlertRequest>()
-                        suricataLogAnalyzer.analyzeAndMakeADecision(log)
+                        ipsLogAnalyzer.analyzeAlert(log)
                         call.respond(HttpStatusCode.OK, "OK")
                     } catch (e: Exception) {
                         Miska.error(e.message ?: "analysis unknown error")
@@ -69,6 +69,6 @@ class KtorServer {
 
     fun isRunning(): Boolean = isRunning
 
-    fun reloadingTheAnalyzingRules() = suricataLogAnalyzer.reloadRules()
+    fun reloadingTheAnalyzingRules() = ipsLogAnalyzer.reloadRules()
 
 }

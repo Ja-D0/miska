@@ -13,6 +13,7 @@ import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.net.ConnectException
+import java.net.SocketTimeoutException
 import java.util.*
 import java.util.concurrent.TimeUnit
 
@@ -29,9 +30,6 @@ class MikrotikApiService private constructor() {
             return instance!!
         }
 
-        /**
-         *
-         */
         fun <T> runRequest(callable: () -> Response<T>): T {
             val response: Response<T>
 
@@ -39,6 +37,8 @@ class MikrotikApiService private constructor() {
                 response = callable()
             } catch (connectException: ConnectException) {
                 throw FailedRequestException(500, "", connectException.message!!)
+            } catch (socketException: SocketTimeoutException) {
+                throw FailedRequestException(500, "", socketException.message ?: "Unknown error")
             }
 
             if (response.isSuccessful) {

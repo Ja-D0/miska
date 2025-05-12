@@ -8,17 +8,12 @@ import org.apache.commons.cli.HelpFormatter
 import kotlin.reflect.full.declaredFunctions
 import kotlin.reflect.full.findAnnotation
 
-/**
- *
- */
 class InlineCommandsList : CommandsListImpl() {
 
     @Command("exit", CommandType.COMMAND, "")
     fun commandExit() = Miska.app.stop()
 
-    /**
-     *
-     */
+
     @Command("ls", CommandType.COMMAND, "")
     fun commandLs() {
         val result: StringBuilder = StringBuilder()
@@ -34,17 +29,11 @@ class InlineCommandsList : CommandsListImpl() {
         return Miska.app.cliOut(result.toString())
     }
 
-    /**
-     *
-     */
     @Command("..", CommandType.COMMAND, "")
     fun commandBack() {
         Miska.app.goBack()
     }
-
-    /**
-     *
-     */
+    
     @Command("help", CommandType.COMMAND, "")
     fun commandHelp(
         @CommandOption("i", "id", true, "")

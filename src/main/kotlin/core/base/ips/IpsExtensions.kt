@@ -1,4 +1,4 @@
-package com.miska.core.base.suricata
+package com.miska.core.base.ips
 
 import com.miska.Miska
 

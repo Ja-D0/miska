@@ -10,7 +10,9 @@ import com.miska.core.base.cli.exceptions.ApplicationException
 import com.miska.core.base.cli.exceptions.CommandsListNotFoundException
 import com.miska.core.base.cli.interfaces.CommandsList
 import com.miska.core.base.cli.interfaces.Response
-import com.miska.core.base.config.IpsConfig
+import com.miska.core.base.config.Config
+import com.miska.core.base.config.ConfigLoader
+import com.miska.core.base.config.ips.IpsConfig
 import com.miska.core.base.config.logs.AbstractLogsConfig
 import com.miska.core.base.interfaces.Application
 import com.miska.core.base.interfaces.Configurable
